@@ -6,10 +6,14 @@
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.stmt.query.In;
 import com.j256.ormlite.support.ConnectionSource;
+import com.sun.tools.corba.se.idl.constExpr.Or;
 import spark.Request;
 import spark.Response;
 import org.json.*;
+import java.text.SimpleDateFormat;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import static spark.Spark.*;
@@ -321,6 +325,359 @@ public class Server {
                 installTypeArray.put(obj);
             }
             return installTypeArray.toString();
+        });
+
+        //create DAO
+        Dao<Sale, String> saleStringDao = DaoManager.createDao(connectionSource, Sale.class);
+
+        //Post request sends date table details to the app
+        post("/addsale", (Request request, Response response) -> {
+            String data = request.body();
+            System.out.println(data);
+
+            JSONObject obj = new JSONObject(data);
+            int SaleID = obj.getInt("SaleID");
+            int CustomerID = obj.getInt("CustomerID");
+            int UserID = obj.getInt("UserID");
+            int InstallTypeID = obj.getInt("InstallTypeID");
+            String SiteAddress = obj.getString("SiteAddress");
+            String SiteSuburb = obj.getString("SiteSuburb");
+            String SaleStatus = obj.getString("SaleStatus");
+            String Fire = obj.getString("Fire");
+            int Price = obj.getInt("Price");
+            boolean SiteCheckBooked = obj.getBoolean("SiteCheckBooked");
+
+            String SiteCheckDateString = obj.getString("SiteCheckDate");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yyyy");
+            java.util.Date DateValueUtil = sdf1.parse(SiteCheckDateString);
+            java.sql.Date SiteCheckDateSql = new java.sql.Date(DateValueUtil.getTime());
+
+            String SiteCheckTimeString = obj.getString("SiteCheckTime");
+            //java.sql.Time SiteCheckTimeSql = java.sql.Time.valueOf(SiteCheckTimeString);
+            /*SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm:ss");
+            java.util.Date TimeValueUtil = sdf2.parse(SiteCheckTimeString);
+            java.sql.Time SiteCheckTimeSql = new java.sql.Time(TimeValueUtil.getTime());*/
+
+            int SiteCheckBy = obj.getInt("SiteCheckBy");
+            int SalesPerson = obj.getInt("SalesPerson");
+
+            String EstimationDateString = obj.getString("EstimationDate");
+            java.util.Date EstimationDateValueUtil = sdf1.parse(EstimationDateString);
+            java.sql.Date EstimationDateSql = new java.sql.Date(EstimationDateValueUtil.getTime());
+
+            String QuoteNumber = obj.getString("QuoteNumber");
+            String SiteCheckPath = obj.getString("SiteCheckPath");
+            String QuotePath = obj.getString("QuotePath");
+            String PhotoPath = obj.getString("PhotoPath");
+
+            String FollowUpDateString = obj.getString("FollowUpDate");
+            java.util.Date FollowUpDateValueUtil = sdf1.parse(FollowUpDateString);
+            java.sql.Date FollowUpDateSql = new java.sql.Date(FollowUpDateValueUtil.getTime());
+
+            Sale sale = new Sale();
+            sale.setCustomerID(CustomerID);
+            sale.setUserID(UserID);
+            sale.setInstallTypeID(InstallTypeID);
+            sale.setSiteAddress(SiteAddress);
+            sale.setSiteSuburb(SiteSuburb);
+            sale.setSaleStatus(SaleStatus);
+            sale.setFire(Fire);
+            sale.setPrice(Price);
+            sale.setSiteCheckBooked(SiteCheckBooked);
+            sale.setSiteCheckDate(SiteCheckDateSql);
+            sale.setSiteCheckTime(SiteCheckTimeString);
+            sale.setSiteCheckBy(SiteCheckBy);
+            sale.setSalesPerson(SalesPerson);
+            sale.setEstimationDate(EstimationDateSql);
+            sale.setQuoteNumber(QuoteNumber);
+            sale.setSiteCheckPath(SiteCheckPath);
+            sale.setQuotePath(QuotePath);
+            sale.setPhotoPath(PhotoPath);
+            sale.setFollowUpDate(FollowUpDateSql);
+
+            saleStringDao.create(sale);
+            return "OK";
+
+        });
+
+        //Get request for getting date table details from the app
+        get("/getsales", (request, response)-> {
+
+            //Create an array with dates
+            List<Sale> saleList = saleStringDao.queryForAll();
+            JSONArray saleArray = new JSONArray();
+            for (Sale sale : saleList) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("SaleID", sale.getSaleID());
+                    obj.put("CustomerID", sale.getCustomerID());
+                    obj.put("UserID", sale.getUserID());
+                    obj.put("InstallTypeID", sale.getInstallTypeID());
+                    obj.put("SiteAddress", sale.getSiteAddress());
+                    obj.put("SiteSuburb", sale.getSiteSuburb());
+                    obj.put("SaleStatus", sale.getSaleStatus());
+                    obj.put("Fire", sale.getFire());
+                    obj.put("Price", sale.getPrice());
+                    obj.put("SiteCheckBooked", sale.isSiteCheckBooked());
+                    obj.put("SiteCheckDate", sale.getSiteCheckDate());
+                    obj.put("SiteCheckTime", sale.getSiteCheckTime());
+                    obj.put("SiteCheckBy", sale.getSiteCheckBy());
+                    obj.put("SalesPerson", sale.getSalesPerson());
+                    obj.put("EstimationDate", sale.getEstimationDate());
+                    obj.put("QuoteNumber", sale.getQuoteNumber());
+                    obj.put("SiteCheckPath", sale.getSiteCheckPath());
+                    obj.put("QuotePath", sale.getQuotePath());
+                    obj.put("PhotoPath", sale.getPhotoPath());
+                    obj.put("FolllowUpDate", sale.getFollowUpDate());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                saleArray.put(obj);
+            }
+            return saleArray.toString();
+        });
+
+        //create DAO
+        Dao<Install, String> installStringDao = DaoManager.createDao(connectionSource, Install.class);
+
+        //Post request sends date table details to the app
+        post("/addinstall", (Request request, Response response) -> {
+            String data = request.body();
+            System.out.println(data);
+
+            JSONObject obj = new JSONObject(data);
+            //int InstallID = obj.getInt("InstallID");
+            int SaleID = obj.getInt("SaleID");
+            String InstallStatus = obj.getString("InstallStatus");
+            //String InvoicePath = obj.getString("InvoicePath");
+            String SiteCheckPath = obj.getString("SiteCheckPath");
+            String PhotoPath = obj.getString("PhotoPath");
+            boolean OrderChecked = obj.getBoolean("OrderChecked");
+            String InstallerID = obj.getString("InstallerID");
+
+            String InstallDateString = obj.getString("InstallDate");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yyyy");
+            java.util.Date DateValueUtil = sdf1.parse(InstallDateString);
+            java.sql.Date InstallDateSql = new java.sql.Date(DateValueUtil.getTime());
+
+            String InstallTime = obj.getString("InstallTime");
+            int PartsReady = obj.getInt("PartsReady");
+            String NoteToInstaller = obj.getString("NoteToInstaller");
+            boolean InstallComplete = obj.getBoolean("InstallComplete");
+            String InstallerNote = obj.getString("InstallerNote");
+
+            Install install = new Install();
+            //install.setInstallID(InstallID);
+            install.setSaleID(SaleID);
+            install.setInstallStatus(InstallStatus);
+            //install.setInvoicePath(InvoicePath);
+            install.setSiteCheckPath(SiteCheckPath);
+            install.setPhotoPath(PhotoPath);
+            install.setOrderChecked(OrderChecked);
+            install.setInstallerID(InstallerID);
+            install.setInstallDate(InstallDateSql);
+            install.setInstallTime(InstallTime);
+            install.setPartsReady(PartsReady);
+            install.setNoteToInstaller(NoteToInstaller);
+            install.setInstallComplete(InstallComplete);
+            install.setInstallerNote(InstallerNote);
+
+
+            installStringDao.create(install);
+            return "OK";
+
+        });
+
+        //Get request for getting date table details from the app
+        get("/getinstalls", (request, response)-> {
+
+            //Create an array with dates
+            List<Install> installList = installStringDao.queryForAll();
+            JSONArray installArray = new JSONArray();
+            for (Install install : installList) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("InstallID", install.getInstallID());
+                    obj.put("SaleID", install.getSaleID());
+                    obj.put("InstallStatus", install.getInstallStatus());
+                    //obj.put("InvoicePath", install.getInvoicePath());
+                    obj.put("SiteCheckPath", install.getSiteCheckPath());
+                    obj.put("PhotoPath", install.getPhotoPath());
+                    obj.put("OrderChecked", install.isOrderChecked());
+                    obj.put("InstallerID", install.getInstallerID());
+                    obj.put("InstallDate", install.getInstallDate());
+                    obj.put("InstallTime", install.getInstallTime());
+                    obj.put("PartsReady", install.getPartsReady());
+                    obj.put("NoteToInstaller", install.getNoteToInstaller());
+                    obj.put("InstallComplete", install.isInstallComplete());
+                    obj.put("InstallerNote", install.getInstallerNote());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                installArray.put(obj);
+            }
+            return installArray.toString();
+        });
+
+        //create DAO
+        Dao<Fire, String> fireStringDao = DaoManager.createDao(connectionSource, Fire.class);
+
+        //Post request sends date table details to the app
+        post("/addfire", (Request request, Response response) -> {
+            String data = request.body();
+            System.out.println(data);
+
+            JSONObject obj = new JSONObject(data);
+            String FireID = obj.getString("FireID");
+            String FireType = obj.getString("FireType");
+            String Make = obj.getString("Make");
+            String Model = obj.getString("Model");
+            String Fuel = obj.getString("Fuel");
+            String ECAN = obj.getString("ECAN");
+            String Nelson = obj.getString("Nelson");
+            String Life = obj.getString("Life");
+
+            Fire fire = new Fire();
+            fire.setFireID(FireID);
+            fire.setFireType(FireType);
+            fire.setMake(Make);
+            fire.setModel(Model);
+            fire.setFuel(Fuel);
+            fire.setECAN(ECAN);
+            fire.setNelson(Nelson);
+            fire.setLife(Life);
+
+            fireStringDao.create(fire);
+            return "OK";
+
+        });
+
+        //Get request for getting date table details from the app
+        get("/getfires", (request, response)-> {
+
+            //Create an array with dates
+            List<Fire> fireList = fireStringDao.queryForAll();
+            JSONArray fireArray = new JSONArray();
+            for (Fire fire : fireList) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("FireID", fire.getFireID());
+                    obj.put("FireType", fire.getFireType());
+                    obj.put("Make", fire.getMake());
+                    obj.put("Model", fire.getModel());
+                    obj.put("Fuel", fire.getFuel());
+                    obj.put("ECAN", fire.getECAN());
+                    obj.put("Nelson", fire.getNelson());
+                    obj.put("Life", fire.getLife());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                fireArray.put(obj);
+            }
+            return fireArray.toString();
+        });
+
+        //create DAO
+        Dao<Follow_Up_Comment, String> follow_up_commentStringDao = DaoManager.createDao(connectionSource, Follow_Up_Comment.class);
+
+        //Post request sends date table details to the app
+        post("/addfollowupcomment", (Request request, Response response) -> {
+            String data = request.body();
+            System.out.println(data);
+
+            JSONObject obj = new JSONObject(data);
+            int CommentID = obj.getInt("CommentID");
+            int SaleID = obj.getInt("SaleID");
+            String Comment = obj.getString("Comment");
+            String Time_Stamp = obj.getString("Time_Stamp");
+
+            Follow_Up_Comment follow_up_comment = new Follow_Up_Comment();
+            follow_up_comment.setCommentID(CommentID);
+            follow_up_comment.setSaleID(SaleID);
+            follow_up_comment.setComment(Comment);
+            follow_up_comment.setTime_Stamp(Time_Stamp);
+
+            follow_up_commentStringDao.create(follow_up_comment);
+            return "OK";
+
+        });
+
+        //Get request for getting date table details from the app
+        get("/getfollowupcomments", (request, response)-> {
+
+            //Create an array with dates
+            List<Follow_Up_Comment> follow_up_commentList = follow_up_commentStringDao.queryForAll();
+            JSONArray follow_up_commentArray = new JSONArray();
+            for (Follow_Up_Comment follow_up_comment : follow_up_commentList) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("CommentID", follow_up_comment.getCommentID());
+                    obj.put("SaleID", follow_up_comment.getSaleID());
+                    obj.put("Comment", follow_up_comment.getComment());
+                    obj.put("Time_Stamp", follow_up_comment.getTime_Stamp());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                follow_up_commentArray.put(obj);
+            }
+            return follow_up_commentArray.toString();
+        });
+
+
+        //create DAO
+        Dao<Schedule, String> scheduleStringDao = DaoManager.createDao(connectionSource, Schedule.class);
+
+        //Post request sends date table details to the app
+        post("/addschedule", (Request request, Response response) -> {
+            String data = request.body();
+            System.out.println(data);
+
+            JSONObject obj = new JSONObject(data);
+
+            String InstallDateString = obj.getString("InstallDate");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yyyy");
+            java.util.Date DateValueUtil = sdf1.parse(InstallDateString);
+            java.sql.Date InstallDateSql = new java.sql.Date(DateValueUtil.getTime());
+
+            String InstallTime = obj.getString("InstallTime");
+            int UserID = obj.getInt("UserID");
+            int InstallID = obj.getInt("InstallID");
+
+            Schedule schedule = new Schedule();
+            schedule.setInstallDate(InstallDateSql);
+            schedule.setInstallTime(InstallTime);
+            schedule.setUserID(UserID);
+            schedule.setInstallID(InstallID);
+
+            scheduleStringDao.create(schedule);
+            return "OK";
+
+        });
+
+        //Get request for getting date table details from the app
+        get("/getschedules", (request, response)-> {
+
+            //Create an array with dates
+            List<Schedule> scheduleList = scheduleStringDao.queryForAll();
+            JSONArray scheduleArray = new JSONArray();
+            for (Schedule schedule : scheduleList) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("InstallDate", schedule.getInstallDate());
+                    obj.put("InstallTime", schedule.getInstallTime());
+                    obj.put("UserID", schedule.getUserID());
+                    obj.put("InstallID", schedule.getInstallID());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                scheduleArray.put(obj);
+            }
+            return scheduleArray.toString();
         });
     }
 
