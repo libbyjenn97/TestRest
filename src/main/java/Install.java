@@ -20,15 +20,6 @@ public class Install {
     @DatabaseField
     private String InstallStatus;
 
-    /*@DatabaseField
-    private String InvoicePath;*/
-
-    @DatabaseField
-    private String SiteCheckPath;
-
-    @DatabaseField
-    private String PhotoPath;
-
     @DatabaseField
     private boolean OrderChecked;
 
@@ -80,30 +71,6 @@ public class Install {
 
     public void setInstallStatus(String installStatus) {
         InstallStatus = installStatus;
-    }
-
-    /*public String getInvoicePath() {
-        return InvoicePath;
-    }
-
-    public void setInvoicePath(String invoicePath) {
-        InvoicePath = invoicePath;
-    }*/
-
-    public String getSiteCheckPath() {
-        return SiteCheckPath;
-    }
-
-    public void setSiteCheckPath(String siteCheckPath) {
-        SiteCheckPath = siteCheckPath;
-    }
-
-    public String getPhotoPath() {
-        return PhotoPath;
-    }
-
-    public void setPhotoPath(String photoPath) {
-        PhotoPath = photoPath;
     }
 
     public boolean isOrderChecked() {

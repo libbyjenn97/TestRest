@@ -210,7 +210,6 @@ public class Server {
             int UserID = obj.getInt("UserID");
             int AuthenticationID = obj.getInt("AuthenticationID");
             String UserName = obj.getString("UserName");
-            String Role = obj.getString("Role");
             String NZHHA_Number = obj.getString("NZHHA_Number");
             String FirstName = obj.getString("FirstName");
             String LastName = obj.getString("LastName");
@@ -227,7 +226,6 @@ public class Server {
             user_account.setUserID(UserID);
             user_account.setAuthenticationID(AuthenticationID);
             user_account.setUserName(UserName);
-            user_account.setRole(Role);
             user_account.setNZHHA_Number(NZHHA_Number);
             user_account.setFirstName(FirstName);
             user_account.setLastName(LastName);
@@ -257,7 +255,6 @@ public class Server {
                     obj.put("UserID", user_account.getUserID());
                     obj.put("AuthenticationID", user_account.getAuthenticationID());
                     obj.put("UserName", user_account.getUserName());
-                    obj.put("Role", user_account.getRole());
                     obj.put("NZHHA_Number", user_account.getNZHHA_Number());
                     obj.put("FirstName", user_account.getFirstName());
                     obj.put("LastName", user_account.getLastName());
@@ -353,11 +350,6 @@ public class Server {
             java.sql.Date SiteCheckDateSql = new java.sql.Date(DateValueUtil.getTime());
 
             String SiteCheckTimeString = obj.getString("SiteCheckTime");
-            //java.sql.Time SiteCheckTimeSql = java.sql.Time.valueOf(SiteCheckTimeString);
-            /*SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm:ss");
-            java.util.Date TimeValueUtil = sdf2.parse(SiteCheckTimeString);
-            java.sql.Time SiteCheckTimeSql = new java.sql.Time(TimeValueUtil.getTime());*/
-
             int SiteCheckBy = obj.getInt("SiteCheckBy");
             int SalesPerson = obj.getInt("SalesPerson");
 
@@ -366,9 +358,7 @@ public class Server {
             java.sql.Date EstimationDateSql = new java.sql.Date(EstimationDateValueUtil.getTime());
 
             String QuoteNumber = obj.getString("QuoteNumber");
-            String SiteCheckPath = obj.getString("SiteCheckPath");
             String QuotePath = obj.getString("QuotePath");
-            String PhotoPath = obj.getString("PhotoPath");
 
             String FollowUpDateString = obj.getString("FollowUpDate");
             java.util.Date FollowUpDateValueUtil = sdf1.parse(FollowUpDateString);
@@ -390,9 +380,7 @@ public class Server {
             sale.setSalesPerson(SalesPerson);
             sale.setEstimationDate(EstimationDateSql);
             sale.setQuoteNumber(QuoteNumber);
-            sale.setSiteCheckPath(SiteCheckPath);
             sale.setQuotePath(QuotePath);
-            sale.setPhotoPath(PhotoPath);
             sale.setFollowUpDate(FollowUpDateSql);
 
             saleStringDao.create(sale);
@@ -425,9 +413,7 @@ public class Server {
                     obj.put("SalesPerson", sale.getSalesPerson());
                     obj.put("EstimationDate", sale.getEstimationDate());
                     obj.put("QuoteNumber", sale.getQuoteNumber());
-                    obj.put("SiteCheckPath", sale.getSiteCheckPath());
                     obj.put("QuotePath", sale.getQuotePath());
-                    obj.put("PhotoPath", sale.getPhotoPath());
                     obj.put("FolllowUpDate", sale.getFollowUpDate());
 
                 } catch (JSONException e) {
@@ -450,9 +436,6 @@ public class Server {
             //int InstallID = obj.getInt("InstallID");
             int SaleID = obj.getInt("SaleID");
             String InstallStatus = obj.getString("InstallStatus");
-            //String InvoicePath = obj.getString("InvoicePath");
-            String SiteCheckPath = obj.getString("SiteCheckPath");
-            String PhotoPath = obj.getString("PhotoPath");
             boolean OrderChecked = obj.getBoolean("OrderChecked");
             String InstallerID = obj.getString("InstallerID");
 
@@ -471,9 +454,6 @@ public class Server {
             //install.setInstallID(InstallID);
             install.setSaleID(SaleID);
             install.setInstallStatus(InstallStatus);
-            //install.setInvoicePath(InvoicePath);
-            install.setSiteCheckPath(SiteCheckPath);
-            install.setPhotoPath(PhotoPath);
             install.setOrderChecked(OrderChecked);
             install.setInstallerID(InstallerID);
             install.setInstallDate(InstallDateSql);
@@ -501,9 +481,6 @@ public class Server {
                     obj.put("InstallID", install.getInstallID());
                     obj.put("SaleID", install.getSaleID());
                     obj.put("InstallStatus", install.getInstallStatus());
-                    //obj.put("InvoicePath", install.getInvoicePath());
-                    obj.put("SiteCheckPath", install.getSiteCheckPath());
-                    obj.put("PhotoPath", install.getPhotoPath());
                     obj.put("OrderChecked", install.isOrderChecked());
                     obj.put("InstallerID", install.getInstallerID());
                     obj.put("InstallDate", install.getInstallDate());

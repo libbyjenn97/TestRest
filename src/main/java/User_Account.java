@@ -20,9 +20,6 @@ public class User_Account {
     private String UserName;
 
     @DatabaseField
-    private String Role;
-
-    @DatabaseField
     private String NZHHA_Number;
 
     @DatabaseField
@@ -82,14 +79,6 @@ public class User_Account {
 
     public void setUserName(String userName) {
         UserName = userName;
-    }
-
-    public String getRole() {
-        return Role;
-    }
-
-    public void setRole(String role) {
-        Role = role;
     }
 
     public String getNZHHA_Number() {
