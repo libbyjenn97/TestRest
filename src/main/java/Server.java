@@ -17,9 +17,21 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import static spark.Spark.*;
+import com.j256.ormlite.table.TableUtils;
+import java.sql.PreparedStatement;
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.Statement;
 
 public class Server {
 
+    // JDBC driver name and database URL
+    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    static final String DB_URL = "jdbc:sqlserver://wchdb.cnfoxyxq90wv.ap-southeast-2.rds.amazonaws.com:1433;databaseName=AWS_WCH_DB";
+
+    //  Database credentials
+    static final String USER = "Khgv92367hdkfug9";
+    static final String PASS = "Locei02h84b5KJUVaW";
 
     public static void main(String[] args) throws SQLException {
 
@@ -34,15 +46,15 @@ public class Server {
 
         //create DAO
         Dao<Customer, String> customerDao = DaoManager.createDao(connectionSource, Customer.class);
-        //TableUtils.createTableIfNotExists(connectionSource, Plant.class);
+        //TableUtils.createTableIfNotExists(connectionSource, Customer.class);
 
-        //Post request sends customer details to the app
+        //Post request gets customer details from the app
         post("/addcustomer", (Request request, Response response) -> {
             String data = request.body();
             System.out.println(data);
 
             JSONObject obj = new JSONObject(data);
-            int CustomerID = obj.getInt("CustomerID");
+            //int CustomerID = obj.getInt("CustomerID");
             String FirstName = obj.getString("FirstName");
             String LastName = obj.getString("LastName");
             String PostalAddress = obj.getString("PostalAddress");
@@ -53,24 +65,58 @@ public class Server {
             String Email = obj.getString("Email");
             String ReesCode = obj.getString("ReesCode");
 
-            Customer customer = new Customer();
-            customer.setCustomerID(CustomerID);
+            Connection conn = null;
+            Statement stmt = null;
+            try{
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                //STEP 3: Open a connection
+                System.out.println("Connecting to a selected database...");
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                System.out.println("Connected database successfully...");
+
+                //STEP 4: Execute a query
+                System.out.println("Inserting records into the table...");
+
+                PreparedStatement statement = conn.prepareStatement("insert into Customer (FirstName, LastName, PostalAddress, PostalSuburb, PostalCode, Phone, Mobile, Email, ReesCode ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                statement.setString(1, FirstName);
+                statement.setString(2, LastName);
+                statement.setString(3, PostalAddress);
+                statement.setString(4, PostalSuburb);
+                statement.setString(5, PostalCode);
+                statement.setString(6, Phone);
+                statement.setString(7, Mobile);
+                statement.setString(8, Email);
+                statement.setString(9, ReesCode);
+                statement.executeUpdate();
+
+                //STEP 4: Execute a query
+                System.out.println("Customer created successfully");
+
+            }catch(SQLException se){
+                //Handle errors for JDBC
+                se.printStackTrace();
+            }
+
+            /*Customer customer = new Customer();
+            //customer.setCustomerID(CustomerID);
             customer.setFirstName(FirstName);
             customer.setLastName(LastName);
             customer.setPostalAddress(PostalAddress);
             customer.setPostalSuburb(PostalSuburb);
-            customer.setPostalCode(PostalCode);
-            customer.setPhone(Phone);
-            customer.setMobile(Mobile);
+            //customer.setPostalCode(PostalCode);
+            //customer.setPhone(Phone);
+            //customer.setMobile(Mobile);
             customer.setEmail(Email);
-            customer.setReesCode(ReesCode);
+            //customer.setReesCode(ReesCode);
 
-            customerDao.create(customer);
+            customerDao.create(customer);*/
             return "OK";
 
         });
 
-        //Get request for getting customer details from the app
+        //Get request for sending customer details to the app
         get("/getcustomers", (request, response)-> {
 
             //Create an array with customer details
