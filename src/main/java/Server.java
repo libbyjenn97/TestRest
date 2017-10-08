@@ -8,6 +8,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.query.In;
 import com.j256.ormlite.support.ConnectionSource;
+import com.sun.org.apache.regexp.internal.RE;
 import com.sun.tools.corba.se.idl.constExpr.Or;
 import spark.Request;
 import spark.Response;
@@ -53,6 +54,8 @@ public class Server {
             String data = request.body();
             System.out.println(data);
 
+            String ReesCode = "";
+
             JSONObject obj = new JSONObject(data);
             //int CustomerID = obj.getInt("CustomerID");
             String FirstName = obj.getString("FirstName");
@@ -63,7 +66,17 @@ public class Server {
             String Phone = obj.getString("Phone");
             String Mobile = obj.getString("Mobile");
             String Email = obj.getString("Email");
-            String ReesCode = obj.getString("ReesCode");
+
+            try {
+                ReesCode = obj.getString("ReesCode");
+            }
+            catch (org.json.JSONException e){
+                System.out.println("null");
+            }
+
+            if(ReesCode.isEmpty()){
+                ReesCode = "NULL";
+            }
 
             Connection conn = null;
             Statement stmt = null;
@@ -98,20 +111,6 @@ public class Server {
                 //Handle errors for JDBC
                 se.printStackTrace();
             }
-
-            /*Customer customer = new Customer();
-            //customer.setCustomerID(CustomerID);
-            customer.setFirstName(FirstName);
-            customer.setLastName(LastName);
-            customer.setPostalAddress(PostalAddress);
-            customer.setPostalSuburb(PostalSuburb);
-            //customer.setPostalCode(PostalCode);
-            //customer.setPhone(Phone);
-            //customer.setMobile(Mobile);
-            customer.setEmail(Email);
-            //customer.setReesCode(ReesCode);
-
-            customerDao.create(customer);*/
             return "OK";
 
         });
@@ -144,26 +143,117 @@ public class Server {
         });
 
         //create DAO
-        Dao<DateTable, String> dateTableDao = DaoManager.createDao(connectionSource, DateTable.class);
+        Dao<Customer, String> newCustomerDao = DaoManager.createDao(connectionSource, Customer.class);
+
+        //Get request for sending customer details to the app
+        get("/getnewcustomer", (request, response)-> {
+
+            //Create an array with customer details
+            List<Customer> customers = customerDao.queryForAll();
+            JSONArray customerArray = new JSONArray();
+            for (Customer customer : customers) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("CustomerID", customer.getCustomerID());
+                    obj.put("FirstName", customer.getFirstName());
+                    obj.put("LastName", customer.getLastName());
+                    obj.put("PostalAddress", customer.getPostalAddress());
+                    obj.put("PostalSuburb", customer.getPostalSuburb());
+                    obj.put("PostalCode", customer.getPostalCode());
+                    obj.put("Phone", customer.getPhone());
+                    obj.put("Mobile", customer.getMobile());
+                    obj.put("Email", customer.getEmail());
+                    obj.put("ReesCode", customer.getReesCode());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                customerArray.put(obj);
+            }
+            return customerArray.toString();
+        });
+
+        //create DAO
+        Dao<Sale, String> saleStringDao = DaoManager.createDao(connectionSource, Sale.class);
 
         //Post request sends date table details to the app
-        /*post("/adddate", (Request request, Response response) -> {
+        post("/addsale", (Request request, Response response) -> {
             String data = request.body();
             System.out.println(data);
 
+            String ReesCode = "";
+
             JSONObject obj = new JSONObject(data);
-            String DateValueString = obj.getString("CustomerID");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yyyy");
-            java.util.Date DateValueUtil = sdf1.parse(DateValueString);
-            java.sql.Date DateValueSql = new java.sql.Date(DateValueUtil.getTime());
+            String CustomerID = obj.getString("CustomerID");
+            String SiteAddress = obj.getString("SiteAddress");
+            String SiteSuburb = obj.getString("SiteSuburb");
 
-            DateTable dateTable = new DateTable();
-            dateTable.setDateValue(DateValueSql);
+            Connection conn = null;
+            Statement stmt = null;
+            try{
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
 
-            dateTableDao.create(dateTable);
+                //STEP 3: Open a connection
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+                //STEP 4: Execute a query
+                System.out.println("Inserting records into the table...");
+
+                PreparedStatement statement = conn.prepareStatement("insert into Sale (CustomerID, SiteAddress, SiteSuburb ) values (?, ?, ?)");
+                statement.setString(1, CustomerID);
+                statement.setString(2, SiteAddress);
+                statement.setString(3, SiteSuburb);
+                statement.executeUpdate();
+
+                //STEP 4: Execute a query
+                System.out.println("Sale created successfully");
+
+            }catch(SQLException se){
+                //Handle errors for JDBC
+                se.printStackTrace();
+            }
             return "OK";
 
-        });*/
+        });
+
+        //Get request for getting date table details from the app
+        get("/getsales", (request, response)-> {
+
+            //Create an array with dates
+            List<Sale> saleList = saleStringDao.queryForAll();
+            JSONArray saleArray = new JSONArray();
+            for (Sale sale : saleList) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("SaleID", sale.getSaleID());
+                    obj.put("CustomerID", sale.getCustomerID());
+                    obj.put("UserID", sale.getUserID());
+                    obj.put("InstallTypeID", sale.getInstallTypeID());
+                    obj.put("SiteAddress", sale.getSiteAddress());
+                    obj.put("SiteSuburb", sale.getSiteSuburb());
+                    obj.put("SaleStatus", sale.getSaleStatus());
+                    obj.put("Fire", sale.getFire());
+                    obj.put("Price", sale.getPrice());
+                    obj.put("SiteCheckBooked", sale.isSiteCheckBooked());
+                    obj.put("SiteCheckDate", sale.getSiteCheckDate());
+                    obj.put("SiteCheckTime", sale.getSiteCheckTime());
+                    obj.put("SiteCheckBy", sale.getSiteCheckBy());
+                    obj.put("SalesPerson", sale.getSalesPerson());
+                    obj.put("EstimationDate", sale.getEstimationDate());
+                    obj.put("QuoteNumber", sale.getQuoteNumber());
+                    obj.put("QuotePath", sale.getQuotePath());
+                    obj.put("FolllowUpDate", sale.getFollowUpDate());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                saleArray.put(obj);
+            }
+            return saleArray.toString();
+        });
+
+        //create DAO
+        Dao<DateTable, String> dateTableDao = DaoManager.createDao(connectionSource, DateTable.class);
 
         //Get request for getting date table details from the app
         get("/getdatetable", (request, response)-> {
@@ -370,105 +460,6 @@ public class Server {
             return installTypeArray.toString();
         });
 
-        //create DAO
-        Dao<Sale, String> saleStringDao = DaoManager.createDao(connectionSource, Sale.class);
-
-        //Post request sends date table details to the app
-        post("/addsale", (Request request, Response response) -> {
-            String data = request.body();
-            System.out.println(data);
-
-            JSONObject obj = new JSONObject(data);
-            int SaleID = obj.getInt("SaleID");
-            int CustomerID = obj.getInt("CustomerID");
-            int UserID = obj.getInt("UserID");
-            int InstallTypeID = obj.getInt("InstallTypeID");
-            String SiteAddress = obj.getString("SiteAddress");
-            String SiteSuburb = obj.getString("SiteSuburb");
-            String SaleStatus = obj.getString("SaleStatus");
-            String Fire = obj.getString("Fire");
-            int Price = obj.getInt("Price");
-            boolean SiteCheckBooked = obj.getBoolean("SiteCheckBooked");
-
-            String SiteCheckDateString = obj.getString("SiteCheckDate");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yyyy");
-            java.util.Date DateValueUtil = sdf1.parse(SiteCheckDateString);
-            java.sql.Date SiteCheckDateSql = new java.sql.Date(DateValueUtil.getTime());
-
-            String SiteCheckTimeString = obj.getString("SiteCheckTime");
-            int SiteCheckBy = obj.getInt("SiteCheckBy");
-            int SalesPerson = obj.getInt("SalesPerson");
-
-            String EstimationDateString = obj.getString("EstimationDate");
-            java.util.Date EstimationDateValueUtil = sdf1.parse(EstimationDateString);
-            java.sql.Date EstimationDateSql = new java.sql.Date(EstimationDateValueUtil.getTime());
-
-            String QuoteNumber = obj.getString("QuoteNumber");
-            String QuotePath = obj.getString("QuotePath");
-
-            String FollowUpDateString = obj.getString("FollowUpDate");
-            java.util.Date FollowUpDateValueUtil = sdf1.parse(FollowUpDateString);
-            java.sql.Date FollowUpDateSql = new java.sql.Date(FollowUpDateValueUtil.getTime());
-
-            Sale sale = new Sale();
-            sale.setCustomerID(CustomerID);
-            sale.setUserID(UserID);
-            sale.setInstallTypeID(InstallTypeID);
-            sale.setSiteAddress(SiteAddress);
-            sale.setSiteSuburb(SiteSuburb);
-            sale.setSaleStatus(SaleStatus);
-            sale.setFire(Fire);
-            sale.setPrice(Price);
-            sale.setSiteCheckBooked(SiteCheckBooked);
-            sale.setSiteCheckDate(SiteCheckDateSql);
-            sale.setSiteCheckTime(SiteCheckTimeString);
-            sale.setSiteCheckBy(SiteCheckBy);
-            sale.setSalesPerson(SalesPerson);
-            sale.setEstimationDate(EstimationDateSql);
-            sale.setQuoteNumber(QuoteNumber);
-            sale.setQuotePath(QuotePath);
-            sale.setFollowUpDate(FollowUpDateSql);
-
-            saleStringDao.create(sale);
-            return "OK";
-
-        });
-
-        //Get request for getting date table details from the app
-        get("/getsales", (request, response)-> {
-
-            //Create an array with dates
-            List<Sale> saleList = saleStringDao.queryForAll();
-            JSONArray saleArray = new JSONArray();
-            for (Sale sale : saleList) {
-                JSONObject obj = new JSONObject();
-                try {
-                    obj.put("SaleID", sale.getSaleID());
-                    obj.put("CustomerID", sale.getCustomerID());
-                    obj.put("UserID", sale.getUserID());
-                    obj.put("InstallTypeID", sale.getInstallTypeID());
-                    obj.put("SiteAddress", sale.getSiteAddress());
-                    obj.put("SiteSuburb", sale.getSiteSuburb());
-                    obj.put("SaleStatus", sale.getSaleStatus());
-                    obj.put("Fire", sale.getFire());
-                    obj.put("Price", sale.getPrice());
-                    obj.put("SiteCheckBooked", sale.isSiteCheckBooked());
-                    obj.put("SiteCheckDate", sale.getSiteCheckDate());
-                    obj.put("SiteCheckTime", sale.getSiteCheckTime());
-                    obj.put("SiteCheckBy", sale.getSiteCheckBy());
-                    obj.put("SalesPerson", sale.getSalesPerson());
-                    obj.put("EstimationDate", sale.getEstimationDate());
-                    obj.put("QuoteNumber", sale.getQuoteNumber());
-                    obj.put("QuotePath", sale.getQuotePath());
-                    obj.put("FolllowUpDate", sale.getFollowUpDate());
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                saleArray.put(obj);
-            }
-            return saleArray.toString();
-        });
 
         //create DAO
         Dao<Install, String> installStringDao = DaoManager.createDao(connectionSource, Install.class);
@@ -655,14 +646,14 @@ public class Server {
         Dao<Schedule, String> scheduleStringDao = DaoManager.createDao(connectionSource, Schedule.class);
 
         //Post request sends date table details to the app
-        post("/addschedule", (Request request, Response response) -> {
+        /*post("/addschedule", (Request request, Response response) -> {
             String data = request.body();
             System.out.println(data);
 
             JSONObject obj = new JSONObject(data);
 
             String InstallDateString = obj.getString("InstallDate");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yyyy");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("YYYY-MM-DD");
             java.util.Date DateValueUtil = sdf1.parse(InstallDateString);
             java.sql.Date InstallDateSql = new java.sql.Date(DateValueUtil.getTime());
 
@@ -679,7 +670,7 @@ public class Server {
             scheduleStringDao.create(schedule);
             return "OK";
 
-        });
+        });*/
 
         //Get request for getting date table details from the app
         get("/getschedules", (request, response)-> {
