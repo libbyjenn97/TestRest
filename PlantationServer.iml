@@ -39,5 +39,6 @@
     <orderEntry type="library" name="Maven: com.j256.ormlite:ormlite-core:4.48" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.6" level="project" />
     <orderEntry type="library" name="Maven: com.microsoft.sqlserver:mssql-jdbc:6.2.1.jre8" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.4" level="project" />
   </component>
 </module>

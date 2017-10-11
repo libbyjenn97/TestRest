@@ -222,6 +222,11 @@ public class Server {
             //Create an array with dates
             List<Sale> saleList = saleStringDao.queryForAll();
             JSONArray saleArray = new JSONArray();
+            int salesPerson = 0;
+            JSONObject quoteNumber = new JSONObject();
+            JSONObject siteCheckPath = new JSONObject();
+            JSONObject quotePath = new JSONObject();
+            JSONObject photoPath = new JSONObject();
             for (Sale sale : saleList) {
                 JSONObject obj = new JSONObject();
                 try {
@@ -235,18 +240,102 @@ public class Server {
                     obj.put("Fire", sale.getFire());
                     obj.put("Price", sale.getPrice());
                     obj.put("SiteCheckBooked", sale.isSiteCheckBooked());
-                    obj.put("SiteCheckDate", sale.getSiteCheckDate());
-                    obj.put("SiteCheckTime", sale.getSiteCheckTime());
+
+                    if(sale.getSiteCheckDate() == null){
+                        obj.put("SiteCheckDate", "NULL");
+                    }
+                    else {
+                        obj.put("SiteCheckDate", sale.getSiteCheckDate());
+                    }
+
+                    if(sale.getSiteCheckTime() == null){
+                        obj.put("SiteCheckTime", "NULL");
+                    }
+                    else {
+                        obj.put("SiteCheckTime", sale.getSiteCheckTime());
+                    }
                     obj.put("SiteCheckBy", sale.getSiteCheckBy());
-                    obj.put("SalesPerson", sale.getSalesPerson());
-                    obj.put("EstimationDate", sale.getEstimationDate());
-                    obj.put("QuoteNumber", sale.getQuoteNumber());
-                    obj.put("QuotePath", sale.getQuotePath());
-                    obj.put("FolllowUpDate", sale.getFollowUpDate());
+
+                    try{
+                        salesPerson = sale.getSalesPerson();
+                    }
+                    catch (Exception e){
+                        System.out.print("no sales person");
+                    }
+
+                    if(salesPerson == 0){
+                        obj.put("SalesPerson", "NULL");
+                    }
+                    else {
+
+                        obj.put("SalesPerson", sale.getSalesPerson());
+                    }
+
+                    if(sale.getEstimationDate() == null){
+                        obj.put("EstimationDate", "NULL");
+                    }
+                    else {
+                        obj.put("EstimationDate", sale.getEstimationDate());
+                    }
+
+                    try{
+                        quoteNumber = obj.put("QuoteNumber", sale.getQuoteNumber());
+                    }
+                    catch (java.lang.NullPointerException e){
+                        obj.put("QuoteNumber", "NULL");
+                    }
+
+                    if(quoteNumber.isNull(null)){
+                        obj.put("QuoteNumber", "NULL");
+                    }
+
+                    try{
+                        siteCheckPath = obj.put("SiteCheckPath", sale.getSiteCheckPath());
+                    }
+                    catch (org.json.JSONException e){
+                        obj.put("SiteCheckPath", "NULL");
+                        System.out.print("no site check path");
+                    }
+
+                    if(siteCheckPath.isNull(null)){
+                        obj.put("SiteCheckPath", "NULL");
+                    }
+
+                    try{
+                       quotePath = obj.put("QuotePath", sale.getQuotePath());
+                    }
+                    catch (Exception e){
+                        obj.put("QuotePath", "NULL");
+                    }
+
+                    if(quotePath.isNull(null)){
+                        obj.put("QuotePath", "NULL");
+                    }
+
+                    try{
+                        photoPath = obj.put("PhotoPath", sale.getPhotoPath());
+                    }
+                    catch (Exception e){
+                        obj.put("PhotoPath", "NULL");
+                    }
+
+                    if(photoPath.isNull(null)){
+                        obj.put("PhotoPath", "NULL");
+                    }
+
+                    if(sale.getFollowUpDate() == null){
+                        obj.put("FollowUpDate", "NULL");
+                    }
+                    else {
+                        obj.put("FollowUpDate", sale.getFollowUpDate());
+                    }
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+
                 saleArray.put(obj);
             }
             return saleArray.toString();

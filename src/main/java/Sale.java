@@ -7,6 +7,9 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 //Create database table name
 @DatabaseTable(tableName = "SALE")
@@ -45,6 +48,7 @@ public class Sale {
 
     @DatabaseField
     private Date SiteCheckDate;
+
 
     @DatabaseField
     private String SiteCheckTime;
@@ -237,4 +241,5 @@ public class Sale {
     public void setFollowUpDate(Date followUpDate) {
         FollowUpDate = followUpDate;
     }
+
 }
