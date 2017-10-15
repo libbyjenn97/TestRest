@@ -206,7 +206,7 @@ public class Server {
                 statement.executeUpdate();
 
                 //STEP 4: Execute a query
-                System.out.println("Sale created successfully");
+                System.out.println("Install updated successfully");
 
             }catch(SQLException se){
                 //Handle errors for JDBC
@@ -501,6 +501,45 @@ public class Server {
 
         //create DAO
         Dao<Install_Type, String> install_typeStringDao = DaoManager.createDao(connectionSource, Install_Type.class);
+
+
+        //Post request sends date table details to the app
+        post("/addInstallComplete", (Request request, Response response) -> {
+            String data = request.body();
+            System.out.println(data);
+
+            JSONObject obj = new JSONObject(data);
+
+            Boolean InstallComplete = obj.getBoolean("InstallComplete");
+            int InstallID = obj.getInt("InstallID");
+
+            Connection conn = null;
+            Statement stmt = null;
+            try{
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                //STEP 3: Open a connection
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+                //STEP 4: Execute a query
+                System.out.println("Inserting records into the table...");
+
+                PreparedStatement statement = conn.prepareStatement("UPDATE Install SET InstallComplete = ? WHERE InstallID = ?");
+                statement.setString(1, String.valueOf(InstallComplete));
+                statement.setString(2, String.valueOf(InstallID));
+                statement.executeUpdate();
+
+                //STEP 4: Execute a query
+                System.out.println("Install completion updated successfully");
+
+            }catch(SQLException se){
+                //Handle errors for JDBC
+                se.printStackTrace();
+            }
+            return "OK";
+
+        });
 
         //Post request sends date table details to the app
         post("/addinstalltype", (Request request, Response response) -> {
