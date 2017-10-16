@@ -10,19 +10,17 @@ import com.j256.ormlite.stmt.query.In;
 import com.j256.ormlite.support.ConnectionSource;
 import com.sun.org.apache.regexp.internal.RE;
 import com.sun.tools.corba.se.idl.constExpr.Or;
+import org.eclipse.jetty.util.log.Log;
 import spark.Request;
 import spark.Response;
 import org.json.*;
+
+import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.sql.Date;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import static spark.Spark.*;
 import com.j256.ormlite.table.TableUtils;
-import java.sql.PreparedStatement;
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.Statement;
 
 public class Server {
 
@@ -34,7 +32,10 @@ public class Server {
     static final String USER = "Khgv92367hdkfug9";
     static final String PASS = "Locei02h84b5KJUVaW";
 
+    private static String[] procedure = new String[]{	"EXEC AWS_WCH_DB.dbo.s_FindAllCustomers"};// procedure[0]
+
     public static void main(String[] args) throws SQLException {
+
 
         //Set port number
         port(1997);
@@ -118,28 +119,66 @@ public class Server {
         //Get request for sending customer details to the app
         get("/getcustomers", (request, response)-> {
 
-            //Create an array with customer details
-            List<Customer> customers = customerDao.queryForAll();
+            Connection conn = null;
+            Statement stmt = null;
             JSONArray customerArray = new JSONArray();
-            for (Customer customer : customers) {
-                JSONObject obj = new JSONObject();
-                try {
-                    obj.put("CustomerID", customer.getCustomerID());
-                    obj.put("FirstName", customer.getFirstName());
-                    obj.put("LastName", customer.getLastName());
-                    obj.put("PostalAddress", customer.getPostalAddress());
-                    obj.put("PostalSuburb", customer.getPostalSuburb());
-                    obj.put("PostalCode", customer.getPostalCode());
-                    obj.put("Phone", customer.getPhone());
-                    obj.put("Mobile", customer.getMobile());
-                    obj.put("Email", customer.getEmail());
-                    obj.put("ReesCode", customer.getReesCode());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            ArrayList<Customer> customers = new ArrayList<>();
+            try{
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                //STEP 3: Open a connection
+                System.out.println("Connecting to a selected database...");
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                System.out.println("Connected database successfully...");
+
+                //STEP 4: Execute a query
+                System.out.println("Getting records from table...");
+
+                PreparedStatement statement = conn.prepareStatement(procedure[0]);
+                ResultSet result = statement.executeQuery();
+                while(result.next()) {
+                    Customer customer = new Customer();
+                    customer.setCustomerID(result.getInt("CustomerID"));
+                    customer.setFirstName(result.getString("FirstName"));
+                    customer.setLastName(result.getString("LastName"));
+                    customer.setPostalAddress(result.getString("PostalAddress"));
+                    customer.setPostalSuburb(result.getString("PostalSuburb"));
+                    customer.setPostalCode(result.getString("PostalCode"));
+                    customer.setPhone(result.getString("Phone"));
+                    customer.setMobile(result.getString("Mobile"));
+                    customer.setEmail(result.getString("Email"));
+                    customer.setReesCode(result.getString("ReesCode"));
+                    customers.add(customer);
                 }
-                customerArray.put(obj);
+                for (Customer customer : customers) {
+                    JSONObject obj = new JSONObject();
+                    try {
+                        obj.put("CustomerID", customer.getCustomerID());
+                        obj.put("FirstName", customer.getFirstName());
+                        obj.put("LastName", customer.getLastName());
+                        obj.put("PostalAddress", customer.getPostalAddress());
+                        obj.put("PostalSuburb", customer.getPostalSuburb());
+                        obj.put("PostalCode", customer.getPostalCode());
+                        obj.put("Phone", customer.getPhone());
+                        obj.put("Mobile", customer.getMobile());
+                        obj.put("Email", customer.getEmail());
+                        obj.put("ReesCode", customer.getReesCode());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    customerArray.put(obj);
+                }
+
+                //STEP 4: Execute a query
+                System.out.println("Customers found successfully");
+
+            }catch(SQLException se){
+                //Handle errors for JDBC
+                se.printStackTrace();
             }
             return customerArray.toString();
+
         });
 
         //create DAO

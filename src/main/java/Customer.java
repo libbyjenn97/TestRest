@@ -49,9 +49,9 @@ public class Customer {
         return CustomerID;
     }
 
-    /*public void setCustomerID(int CustomerID) {
+    public void setCustomerID(int CustomerID) {
         this.CustomerID = CustomerID;
-    }*/
+    }
 
     public String getFirstName() {
         return FirstName;
