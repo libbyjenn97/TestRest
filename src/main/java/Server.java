@@ -32,7 +32,11 @@ public class Server {
     static final String USER = "Khgv92367hdkfug9";
     static final String PASS = "Locei02h84b5KJUVaW";
 
-    private static String[] procedure = new String[]{	"EXEC AWS_WCH_DB.dbo.s_FindAllCustomers"};// procedure[0]
+    private static String[] procedure = new String[]{
+            "EXEC AWS_WCH_DB.dbo.s_FindAllCustomers", //procedure[0]
+            "EXEC AWS_WCH_DB.dbo.s_CreateCustomerSale", //procedure[1]
+            "{call s_CreateCustomerSale(?,?,?,?,?,?,?,?,?,?)}" //procedure[2]
+    };
 
     public static void main(String[] args) throws SQLException {
 
@@ -48,17 +52,14 @@ public class Server {
 
         //create DAO
         Dao<Customer, String> customerDao = DaoManager.createDao(connectionSource, Customer.class);
-        //TableUtils.createTableIfNotExists(connectionSource, Customer.class);
 
-        //Post request gets customer details from the app
-        post("/addcustomer", (Request request, Response response) -> {
+        post("/addcustomersale", (Request request, Response response) -> {
             String data = request.body();
             System.out.println(data);
 
             String ReesCode = "";
 
             JSONObject obj = new JSONObject(data);
-            //int CustomerID = obj.getInt("CustomerID");
             String FirstName = obj.getString("FirstName");
             String LastName = obj.getString("LastName");
             String PostalAddress = obj.getString("PostalAddress");
@@ -67,6 +68,8 @@ public class Server {
             String Phone = obj.getString("Phone");
             String Mobile = obj.getString("Mobile");
             String Email = obj.getString("Email");
+            String SiteAddress = obj.getString("SiteAddress");
+            String SiteSuburb = obj.getString("SiteSuburb");
 
             try {
                 ReesCode = obj.getString("ReesCode");
@@ -93,7 +96,11 @@ public class Server {
                 //STEP 4: Execute a query
                 System.out.println("Inserting records into the table...");
 
-                PreparedStatement statement = conn.prepareStatement("insert into Customer (FirstName, LastName, PostalAddress, PostalSuburb, PostalCode, Phone, Mobile, Email, ReesCode ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                /*PreparedStatement statement = conn.prepareStatement(procedure[1]);
+                ResultSet result = statement.executeQuery();*/
+
+                CallableStatement statement = conn.prepareCall(procedure[2]);
+
                 statement.setString(1, FirstName);
                 statement.setString(2, LastName);
                 statement.setString(3, PostalAddress);
@@ -102,11 +109,12 @@ public class Server {
                 statement.setString(6, Phone);
                 statement.setString(7, Mobile);
                 statement.setString(8, Email);
-                statement.setString(9, ReesCode);
+                statement.setString(9, SiteAddress);
+                statement.setString(10, SiteSuburb);
                 statement.executeUpdate();
 
                 //STEP 4: Execute a query
-                System.out.println("Customer created successfully");
+                System.out.println("Customer and Sale created successfully");
 
             }catch(SQLException se){
                 //Handle errors for JDBC
