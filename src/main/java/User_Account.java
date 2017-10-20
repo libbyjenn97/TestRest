@@ -20,37 +20,16 @@ public class User_Account {
     private String UserName;
 
     @DatabaseField
-    private String NZHHA_Number;
+    private String RoleType;
 
     @DatabaseField
-    private String FirstName;
-
-    @DatabaseField
-    private String LastName;
-
-    @DatabaseField
-    private String PostalAddress;
-
-    @DatabaseField
-    private String PostalSuburb;
-
-    @DatabaseField
-    private String PostalCode;
-
-    @DatabaseField
-    private String Phone;
-
-    @DatabaseField
-    private String Mobile;
-
-    @DatabaseField
-    private String Email;
-
-    @DatabaseField
-    private int ReesNumber;
+    private boolean Install;
 
     @DatabaseField
     private boolean AccountActive;
+
+    @DatabaseField
+    private String PasswordHash;
 
     //Getters and setters
     public User_Account() {
@@ -81,91 +60,35 @@ public class User_Account {
         UserName = userName;
     }
 
-    public String getNZHHA_Number() {
-        return NZHHA_Number;
-    }
-
-    public void setNZHHA_Number(String NZHHA_Number) {
-        this.NZHHA_Number = NZHHA_Number;
-    }
-
-    public String getFirstName() {
-        return FirstName;
-    }
-
-    public void setFirstName(String firstName) {
-        FirstName = firstName;
-    }
-
-    public String getLastName() {
-        return LastName;
-    }
-
-    public void setLastName(String lastName) {
-        LastName = lastName;
-    }
-
-    public String getPostalAddress() {
-        return PostalAddress;
-    }
-
-    public void setPostalAddress(String postalAddress) {
-        PostalAddress = postalAddress;
-    }
-
-    public String getPostalSuburb() {
-        return PostalSuburb;
-    }
-
-    public void setPostalSuburb(String postalSuburb) {
-        PostalSuburb = postalSuburb;
-    }
-
-    public String getPostalCode() {
-        return PostalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        PostalCode = postalCode;
-    }
-
-    public String getPhone() {
-        return Phone;
-    }
-
-    public void setPhone(String phone) {
-        Phone = phone;
-    }
-
-    public String getMobile() {
-        return Mobile;
-    }
-
-    public void setMobile(String mobile) {
-        Mobile = mobile;
-    }
-
-    public String getEmail() {
-        return Email;
-    }
-
-    public void setEmail(String email) {
-        Email = email;
-    }
-
-    public int getReesNumber() {
-        return ReesNumber;
-    }
-
-    public void setReesNumber(int reesNumber) {
-        ReesNumber = reesNumber;
-    }
-
     public boolean isAccountActive() {
         return AccountActive;
     }
 
     public void setAccountActive(boolean accountActive) {
         AccountActive = accountActive;
+    }
+
+    public String getRoleType() {
+        return RoleType;
+    }
+
+    public void setRoleType(String roleType) {
+        RoleType = roleType;
+    }
+
+    public boolean isInstall() {
+        return Install;
+    }
+
+    public void setInstall(boolean install) {
+        Install = install;
+    }
+
+    public String getPasswordHash() {
+        return PasswordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        PasswordHash = passwordHash;
     }
 }

@@ -32,13 +32,26 @@ public class Server {
     static final String USER = "Khgv92367hdkfug9";
     static final String PASS = "Locei02h84b5KJUVaW";
 
+    public int passedInstallID = 0;
+
     private static String[] procedure = new String[]{
             "EXEC AWS_WCH_DB.dbo.s_FindAllCustomers", //procedure[0]
             "EXEC AWS_WCH_DB.dbo.s_CreateCustomerSale", //procedure[1]
-            "{call s_CreateCustomerSale(?,?,?,?,?,?,?,?,?,?)}" //procedure[2]
+            "{call s_CreateCustomerSale(?,?,?,?,?,?,?,?,?,?)}", //procedure[2]
+            "EXEC AWS_WCH_DB.dbo.i_FindSelectedBookingDetails", //procedure[3]
+            "{call i_FindSelectedBookingDetails(?)}", //procedure[4]
+            "EXEC AWS_WCH_DB.dbo.i_GetCalendarInstalls", //procedure[5]
+            "EXEC AWS_WCH_DB.dbo.s_FindCalendarSales", //procedure[6]
+            "EXEC AWS_WCH_DB.dbo.s_FindScheduledEvents", //procedure[7]
+            "EXEC AWS_WCH_DB.dbo.s_getBookingInstallType", //procedure[8]
+            "EXEC AWS_WCH_DB.dbo.i_GetCalendarFireType", //procedure[9]
+            "{call i_UpdateInstallComplete(?,?)}", //procedure[10]
+            "{call i_UpdateInstallerNote(?,?)}", //procedure[11]
+            "EXEC AWS_WCH_DB.dbo.a_LoginDetails", //procedure[12]
     };
 
     public static void main(String[] args) throws SQLException {
+
 
 
         //Set port number
@@ -189,6 +202,132 @@ public class Server {
 
         });
 
+        post("/postInstallID", (Request request, Response response) -> {
+            String data = request.body();
+            System.out.println(data);
+
+
+            JSONObject obj = new JSONObject(data);
+            int InstallID = obj.getInt("InstallID");
+            Server server = new Server();
+            server.passedInstallID = InstallID;
+
+            return InstallID;
+        });
+
+        //Get request for sending customer details to the app
+        get("/getbookingdetails", (request, response)-> {
+
+            Connection conn = null;
+            Statement stmt = null;
+            JSONArray bookingDetailsArray = new JSONArray();
+            ArrayList<Customer> customers = new ArrayList<>();
+            ArrayList<Fire> fires = new ArrayList<>();
+            ArrayList<Install_Type> install_types = new ArrayList<>();
+            ArrayList<Install> installs = new ArrayList<>();
+            try{
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                //STEP 3: Open a connection
+                System.out.println("Connecting to a selected database...");
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                System.out.println("Connected database successfully...");
+
+                //STEP 4: Execute a query
+                System.out.println("Getting records from tables...");
+
+                //PreparedStatement statement = conn.prepareStatement(procedure[3]);
+
+                Server server = new Server();
+
+                int installID = 3244;
+
+                CallableStatement callstatement = conn.prepareCall(procedure[4]);
+                callstatement.setString(1, String.valueOf(installID));
+
+                //PreparedStatement statement = conn.prepareStatement(procedure[3]);
+                ResultSet result = callstatement.executeQuery();
+
+                while(result.next()) {
+                    Customer customer = new Customer();
+                    Fire fire = new Fire();
+                    Install_Type install_type = new Install_Type();
+                    Install install = new Install();
+                    customer.setFirstName(result.getString("FirstName"));
+                    customer.setLastName(result.getString("LastName"));
+                    customer.setPostalAddress(result.getString("PostalAddress"));
+                    customer.setPostalSuburb(result.getString("PostalSuburb"));
+                    customer.setPostalCode(result.getString("PostalCode"));
+                    customer.setPhone(result.getString("Phone"));
+                    customer.setMobile(result.getString("Mobile"));
+                    customer.setEmail(result.getString("Email"));
+                    fire.setFireType(result.getString("FireType"));
+                    install_type.setInstallDescription(result.getString("InstallDescription"));
+                    install.setInstallComplete(result.getBoolean("InstallComplete"));
+
+                    customers.add(customer);
+                    fires.add(fire);
+                    install_types.add(install_type);
+                    installs.add(install);
+
+                }
+                JSONObject obj = new JSONObject();
+                for (Customer customer : customers) {
+                    try {
+                        obj.put("FirstName", customer.getFirstName());
+                        obj.put("LastName", customer.getLastName());
+                        obj.put("PostalAddress", customer.getPostalAddress());
+                        obj.put("PostalSuburb", customer.getPostalSuburb());
+                        obj.put("PostalCode", customer.getPostalCode());
+                        obj.put("Phone", customer.getPhone());
+                        obj.put("Mobile", customer.getMobile());
+                        obj.put("Email", customer.getEmail());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    //bookingDetailsArray.put(obj);
+                }
+
+                for (Fire fire : fires) {
+                    try {
+                        obj.put("FireType", fire.getFireType());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    //bookingDetailsArray.put(obj);
+                }
+
+
+                for (Install install : installs) {
+                    try {
+                        obj.put("InstallComplete", install.isInstallComplete());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    //bookingDetailsArray.put(obj);
+                }
+
+                for (Install_Type install_type : install_types) {
+                    try {
+                        obj.put("InstallDescription", install_type.getInstallDescription());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    bookingDetailsArray.put(obj);
+                }
+
+                //STEP 4: Execute a query
+                System.out.println("Booking details found successfully");
+
+            }catch(SQLException se){
+                //Handle errors for JDBC
+                se.printStackTrace();
+            }
+            return bookingDetailsArray.toString();
+
+        });
+
         //create DAO
         Dao<Customer, String> newCustomerDao = DaoManager.createDao(connectionSource, Customer.class);
 
@@ -266,117 +405,40 @@ public class Server {
         //Get request for getting date table details from the app
         get("/getsales", (request, response)-> {
 
-            //Create an array with dates
-            List<Sale> saleList = saleStringDao.queryForAll();
+            Connection conn = null;
+            Statement stmt = null;
             JSONArray saleArray = new JSONArray();
-            int salesPerson = 0;
-            JSONObject quoteNumber = new JSONObject();
-            JSONObject siteCheckPath = new JSONObject();
-            JSONObject quotePath = new JSONObject();
-            JSONObject photoPath = new JSONObject();
-            for (Sale sale : saleList) {
+            ArrayList<Sale> sales = new ArrayList<>();
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                //STEP 3: Open a connection
+                System.out.println("Connecting to a selected database...");
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                System.out.println("Connected database successfully...");
+
+                //STEP 4: Execute a query
+                System.out.println("Getting records from table...");
+
+                PreparedStatement statement = conn.prepareStatement(procedure[6]);
+                ResultSet result = statement.executeQuery();
+                while(result.next()) {
+                    Sale sale = new Sale();
+                    sale.setSaleID(result.getInt("SaleID"));
+                    sale.setCustomerID(result.getInt("CustomerID"));
+                    sale.setInstallTypeID(result.getInt("InstallTypeID"));
+                    sale.setSiteAddress(result.getString("SiteAddress"));
+                    sale.setSiteSuburb(result.getString("SiteSuburb"));
+                    sales.add(sale);
+                }
+            for (Sale sale : sales) {
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("SaleID", sale.getSaleID());
                     obj.put("CustomerID", sale.getCustomerID());
-                    obj.put("UserID", sale.getUserID());
                     obj.put("InstallTypeID", sale.getInstallTypeID());
                     obj.put("SiteAddress", sale.getSiteAddress());
                     obj.put("SiteSuburb", sale.getSiteSuburb());
-                    obj.put("SaleStatus", sale.getSaleStatus());
-                    obj.put("Fire", sale.getFire());
-                    obj.put("Price", sale.getPrice());
-                    obj.put("SiteCheckBooked", sale.isSiteCheckBooked());
-
-                    if(sale.getSiteCheckDate() == null){
-                        obj.put("SiteCheckDate", "NULL");
-                    }
-                    else {
-                        obj.put("SiteCheckDate", sale.getSiteCheckDate());
-                    }
-
-                    if(sale.getSiteCheckTime() == null){
-                        obj.put("SiteCheckTime", "NULL");
-                    }
-                    else {
-                        obj.put("SiteCheckTime", sale.getSiteCheckTime());
-                    }
-                    obj.put("SiteCheckBy", sale.getSiteCheckBy());
-
-                    try{
-                        salesPerson = sale.getSalesPerson();
-                    }
-                    catch (Exception e){
-                        System.out.print("no sales person");
-                    }
-
-                    if(salesPerson == 0){
-                        obj.put("SalesPerson", "NULL");
-                    }
-                    else {
-
-                        obj.put("SalesPerson", sale.getSalesPerson());
-                    }
-
-                    if(sale.getEstimationDate() == null){
-                        obj.put("EstimationDate", "NULL");
-                    }
-                    else {
-                        obj.put("EstimationDate", sale.getEstimationDate());
-                    }
-
-                    try{
-                        quoteNumber = obj.put("QuoteNumber", sale.getQuoteNumber());
-                    }
-                    catch (java.lang.NullPointerException e){
-                        obj.put("QuoteNumber", "NULL");
-                    }
-
-                    if(quoteNumber.isNull(null)){
-                        obj.put("QuoteNumber", "NULL");
-                    }
-
-                    try{
-                        siteCheckPath = obj.put("SiteCheckPath", sale.getSiteCheckPath());
-                    }
-                    catch (org.json.JSONException e){
-                        obj.put("SiteCheckPath", "NULL");
-                        System.out.print("no site check path");
-                    }
-
-                    if(siteCheckPath.isNull(null)){
-                        obj.put("SiteCheckPath", "NULL");
-                    }
-
-                    try{
-                       quotePath = obj.put("QuotePath", sale.getQuotePath());
-                    }
-                    catch (Exception e){
-                        obj.put("QuotePath", "NULL");
-                    }
-
-                    if(quotePath.isNull(null)){
-                        obj.put("QuotePath", "NULL");
-                    }
-
-                    try{
-                        photoPath = obj.put("PhotoPath", sale.getPhotoPath());
-                    }
-                    catch (Exception e){
-                        obj.put("PhotoPath", "NULL");
-                    }
-
-                    if(photoPath.isNull(null)){
-                        obj.put("PhotoPath", "NULL");
-                    }
-
-                    if(sale.getFollowUpDate() == null){
-                        obj.put("FollowUpDate", "NULL");
-                    }
-                    else {
-                        obj.put("FollowUpDate", sale.getFollowUpDate());
-                    }
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -470,74 +532,47 @@ public class Server {
             return authenticateArray.toString();
         });
 
-        //create DAO
-        Dao<User_Account, String> user_accountStringDao = DaoManager.createDao(connectionSource, User_Account.class);
-
-        //Post request sends date table details to the app
-        post("/adduseraccount", (Request request, Response response) -> {
-            String data = request.body();
-            System.out.println(data);
-
-            JSONObject obj = new JSONObject(data);
-            int UserID = obj.getInt("UserID");
-            int AuthenticationID = obj.getInt("AuthenticationID");
-            String UserName = obj.getString("UserName");
-            String NZHHA_Number = obj.getString("NZHHA_Number");
-            String FirstName = obj.getString("FirstName");
-            String LastName = obj.getString("LastName");
-            String PostalAddress = obj.getString("PostalAddress");
-            String PostalSuburb = obj.getString("PostalSuburb");
-            String PostalCode = obj.getString("PostalCode");
-            String Phone = obj.getString("Phone");
-            String Mobile = obj.getString("Mobile");
-            String Email = obj.getString("Email");
-            int ReesNumber = obj.getInt("ReesNumber");
-            boolean AccountActive = obj.getBoolean("AccountActive");
-
-            User_Account user_account = new User_Account();
-            user_account.setUserID(UserID);
-            user_account.setAuthenticationID(AuthenticationID);
-            user_account.setUserName(UserName);
-            user_account.setNZHHA_Number(NZHHA_Number);
-            user_account.setFirstName(FirstName);
-            user_account.setLastName(LastName);
-            user_account.setPostalAddress(PostalAddress);
-            user_account.setPostalSuburb(PostalSuburb);
-            user_account.setPostalCode(PostalCode);
-            user_account.setPhone(Phone);
-            user_account.setMobile(Mobile);
-            user_account.setEmail(Email);
-            user_account.setReesNumber(ReesNumber);
-            user_account.setAccountActive(AccountActive);
-
-            user_accountStringDao.create(user_account);
-            return "OK";
-
-        });
-
         //Get request for getting date table details from the app
         get("/getuseraccounts", (request, response)-> {
 
-            //Create an array with dates
-            List<User_Account> user_accountList = user_accountStringDao.queryForAll();
+            Connection conn = null;
+            Statement stmt = null;
             JSONArray userAccountArray = new JSONArray();
+            ArrayList<User_Account> user_accountList = new ArrayList<>();
+            //STEP 2: Register JDBC driver
+            Class.forName("com.mysql.jdbc.Driver");
+
+            //STEP 3: Open a connection
+            System.out.println("Connecting to a selected database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("Connected database successfully...");
+
+            //STEP 4: Execute a query
+            System.out.println("Getting records from table...");
+
+            PreparedStatement statement = conn.prepareStatement(procedure[12]);
+            ResultSet result = statement.executeQuery();
+            while(result.next()) {
+                User_Account user_account = new User_Account();
+                user_account.setUserID(result.getInt("UserID"));
+                user_account.setAuthenticationID(result.getInt("AuthenticationID"));
+                user_account.setUserName(result.getString("UserName"));
+                user_account.setRoleType(result.getString("RoleType"));
+                user_account.setInstall(result.getBoolean("Install"));
+                user_account.setAccountActive(result.getBoolean("AccountActive"));
+                user_account.setPasswordHash(result.getString("PasswordHash"));
+                user_accountList.add(user_account);
+            }
             for (User_Account user_account : user_accountList) {
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("UserID", user_account.getUserID());
                     obj.put("AuthenticationID", user_account.getAuthenticationID());
                     obj.put("UserName", user_account.getUserName());
-                    obj.put("NZHHA_Number", user_account.getNZHHA_Number());
-                    obj.put("FirstName", user_account.getFirstName());
-                    obj.put("LastName", user_account.getLastName());
-                    obj.put("PostalAddress", user_account.getPostalAddress());
-                    obj.put("PostalSuburb", user_account.getPostalSuburb());
-                    obj.put("PostalCode", user_account.getPostalCode());
-                    obj.put("Phone", user_account.getPhone());
-                    obj.put("Mobile", user_account.getMobile());
-                    obj.put("Email", user_account.getEmail());
-                    obj.put("ReesNumber", user_account.getReesNumber());
+                    obj.put("RoleType", user_account.getRoleType());
+                    obj.put("Install", user_account.isInstall());
                     obj.put("AccountActive", user_account.isAccountActive());
+                    obj.put("PasswordHash", user_account.getPasswordHash());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -545,9 +580,6 @@ public class Server {
             }
             return userAccountArray.toString();
         });
-
-        //create DAO
-        Dao<Install_Type, String> install_typeStringDao = DaoManager.createDao(connectionSource, Install_Type.class);
 
 
         //Post request sends date table details to the app
@@ -572,9 +604,20 @@ public class Server {
                 //STEP 4: Execute a query
                 System.out.println("Inserting records into the table...");
 
-                PreparedStatement statement = conn.prepareStatement("UPDATE Install SET InstallComplete = ? WHERE InstallID = ?");
-                statement.setString(1, String.valueOf(InstallComplete));
-                statement.setString(2, String.valueOf(InstallID));
+                int installCompleteBit = 0;
+
+                if(InstallComplete){
+                    installCompleteBit = 1;
+                }
+                else {
+                    installCompleteBit = 0;
+                }
+
+                System.out.println(installCompleteBit);
+
+                CallableStatement statement = conn.prepareCall(procedure[10]);
+                statement.setString(2, String.valueOf(InstallComplete));
+                statement.setString(1, String.valueOf(InstallID));
                 statement.executeUpdate();
 
                 //STEP 4: Execute a query
@@ -589,94 +632,40 @@ public class Server {
         });
 
         //Post request sends date table details to the app
-        post("/addinstalltype", (Request request, Response response) -> {
+        post("/addinstallernote", (Request request, Response response) -> {
             String data = request.body();
             System.out.println(data);
 
             JSONObject obj = new JSONObject(data);
-            int InstallTypeID = obj.getInt("InstallTypeID");
-            String InstallDescription = obj.getString("InstallDescription");
-            int BasePrice = obj.getInt("BasePrice");
-            String EmailFromLetter = obj.getString("EmailFromLetter");
-            String SiteCheckFile = obj.getString("SiteCheckFile");
 
-            Install_Type install_type = new Install_Type();
-            install_type.setInstallTypeID(InstallTypeID);
-            install_type.setInstallDescription(InstallDescription);
-            install_type.setBasePrice(BasePrice);
-            install_type.setEmailFromLetter(EmailFromLetter);
-            install_type.setSiteCheckFile(SiteCheckFile);
-
-            install_typeStringDao.create(install_type);
-            return "OK";
-
-        });
-
-        //Get request for getting date table details from the app
-        get("/getinstalltypes", (request, response)-> {
-
-            //Create an array with dates
-            List<Install_Type> install_typeList = install_typeStringDao.queryForAll();
-            JSONArray installTypeArray = new JSONArray();
-            for (Install_Type install_type : install_typeList) {
-                JSONObject obj = new JSONObject();
-                try {
-                    obj.put("InstallTypeID", install_type.getInstallTypeID());
-                    obj.put("InstallDescription", install_type.getInstallDescription());
-                    obj.put("BasePrice", install_type.getBasePrice());
-                    obj.put("EmailFromLetter", install_type.getEmailFromLetter());
-                    obj.put("SiteCheckFile", install_type.getSiteCheckFile());
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                installTypeArray.put(obj);
-            }
-            return installTypeArray.toString();
-        });
-
-
-        //create DAO
-        Dao<Install, String> installStringDao = DaoManager.createDao(connectionSource, Install.class);
-
-        //Post request sends date table details to the app
-        post("/addinstall", (Request request, Response response) -> {
-            String data = request.body();
-            System.out.println(data);
-
-            JSONObject obj = new JSONObject(data);
-            //int InstallID = obj.getInt("InstallID");
-            int SaleID = obj.getInt("SaleID");
-            String InstallStatus = obj.getString("InstallStatus");
-            boolean OrderChecked = obj.getBoolean("OrderChecked");
-            String InstallerID = obj.getString("InstallerID");
-
-            String InstallDateString = obj.getString("InstallDate");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("MM-dd-yyyy");
-            java.util.Date DateValueUtil = sdf1.parse(InstallDateString);
-            java.sql.Date InstallDateSql = new java.sql.Date(DateValueUtil.getTime());
-
-            String InstallTime = obj.getString("InstallTime");
-            int PartsReady = obj.getInt("PartsReady");
-            String NoteToInstaller = obj.getString("NoteToInstaller");
-            boolean InstallComplete = obj.getBoolean("InstallComplete");
             String InstallerNote = obj.getString("InstallerNote");
+            int InstallID = obj.getInt("InstallID");
 
-            Install install = new Install();
-            //install.setInstallID(InstallID);
-            install.setSaleID(SaleID);
-            install.setInstallStatus(InstallStatus);
-            install.setOrderChecked(OrderChecked);
-            install.setInstallerID(InstallerID);
-            install.setInstallDate(InstallDateSql);
-            install.setInstallTime(InstallTime);
-            install.setPartsReady(PartsReady);
-            install.setNoteToInstaller(NoteToInstaller);
-            install.setInstallComplete(InstallComplete);
-            install.setInstallerNote(InstallerNote);
+            Connection conn = null;
+            Statement stmt = null;
+            try{
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                //STEP 3: Open a connection
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+                //STEP 4: Execute a query
+                System.out.println("Inserting records into the table...");
 
 
-            installStringDao.create(install);
+                CallableStatement statement = conn.prepareCall(procedure[11]);
+                statement.setString(2, InstallerNote);
+                statement.setString(1, String.valueOf(InstallID));
+                statement.executeUpdate();
+
+                //STEP 4: Execute a query
+                System.out.println("Install note added successfully");
+
+            }catch(SQLException se){
+                //Handle errors for JDBC
+                se.printStackTrace();
+            }
             return "OK";
 
         });
@@ -684,20 +673,44 @@ public class Server {
         //Get request for getting date table details from the app
         get("/getinstalls", (request, response)-> {
 
-            //Create an array with dates
-            List<Install> installList = installStringDao.queryForAll();
+
+            Connection conn = null;
+            Statement stmt = null;
+            ArrayList<Install> installs = new ArrayList<>();
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                //STEP 3: Open a connection
+                System.out.println("Connecting to a selected database...");
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                System.out.println("Connected database successfully...");
+
+                //STEP 4: Execute a query
+                System.out.println("Getting records from table...");
+
+                PreparedStatement statement = conn.prepareStatement(procedure[5]);
+                ResultSet result = statement.executeQuery();
+                while(result.next()) {
+                    Install install = new Install();
+                    install.setInstallID(result.getInt("InstallID"));
+                    install.setSaleID(result.getInt("SaleID"));
+                    install.setInstallerID(result.getString("InstallerID"));
+                    install.setFireID(result.getString("FireID"));
+                    install.setStockList(result.getString("StockList"));
+                    install.setNoteToInstaller(result.getString("NoteToInstaller"));
+                    install.setInstallComplete(result.getBoolean("InstallComplete"));
+                    install.setInstallerNote(result.getString("InstallerNote"));
+                    installs.add(install);
+                }
             JSONArray installArray = new JSONArray();
-            for (Install install : installList) {
+            for (Install install : installs) {
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("InstallID", install.getInstallID());
                     obj.put("SaleID", install.getSaleID());
-                    obj.put("InstallStatus", install.getInstallStatus());
-                    obj.put("OrderChecked", install.isOrderChecked());
                     obj.put("InstallerID", install.getInstallerID());
-                    obj.put("InstallDate", install.getInstallDate());
-                    obj.put("InstallTime", install.getInstallTime());
-                    obj.put("PartsReady", install.getPartsReady());
+                    obj.put("FireID", install.getFireID());
+                    obj.put("StockList", install.getStockList());
                     obj.put("NoteToInstaller", install.getNoteToInstaller());
                     obj.put("InstallComplete", install.isInstallComplete());
                     obj.put("InstallerNote", install.getInstallerNote());
@@ -710,56 +723,82 @@ public class Server {
             return installArray.toString();
         });
 
+
         //create DAO
-        Dao<Fire, String> fireStringDao = DaoManager.createDao(connectionSource, Fire.class);
+        Dao<Install_Type, String> install_typeStringDao = DaoManager.createDao(connectionSource, Install_Type.class);
+        //Get request for getting date table details from the app
+        get("/getinstalltypes", (request, response)-> {
 
-        //Post request sends date table details to the app
-        post("/addfire", (Request request, Response response) -> {
-            String data = request.body();
-            System.out.println(data);
 
-            JSONObject obj = new JSONObject(data);
-            String FireID = obj.getString("FireID");
-            String FireType = obj.getString("FireType");
-            String Make = obj.getString("Make");
-            String Model = obj.getString("Model");
-            String Fuel = obj.getString("Fuel");
-            String ECAN = obj.getString("ECAN");
-            String Nelson = obj.getString("Nelson");
-            String Life = obj.getString("Life");
+            Connection conn = null;
+            Statement stmt = null;
+            ArrayList<Install_Type> install_types = new ArrayList<>();
+            //STEP 2: Register JDBC driver
+            Class.forName("com.mysql.jdbc.Driver");
 
-            Fire fire = new Fire();
-            fire.setFireID(FireID);
-            fire.setFireType(FireType);
-            fire.setMake(Make);
-            fire.setModel(Model);
-            fire.setFuel(Fuel);
-            fire.setECAN(ECAN);
-            fire.setNelson(Nelson);
-            fire.setLife(Life);
+            //STEP 3: Open a connection
+            System.out.println("Connecting to a selected database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("Connected database successfully...");
 
-            fireStringDao.create(fire);
-            return "OK";
+            //STEP 4: Execute a query
+            System.out.println("Getting records from table...");
 
+            PreparedStatement statement = conn.prepareStatement(procedure[8]);
+            ResultSet result = statement.executeQuery();
+            while(result.next()) {
+                Install_Type install_type = new Install_Type();
+                install_type.setInstallTypeID(result.getInt("InstallTypeID"));
+                install_type.setInstallDescription(result.getString("InstallTypeDescription"));
+                install_types.add(install_type);
+            }
+            JSONArray installArray = new JSONArray();
+            for (Install_Type install_type : install_types) {
+                JSONObject obj = new JSONObject();
+                try {
+                    obj.put("InstallTypeID", install_type.getInstallTypeID());
+                    obj.put("InstallDescription", install_type.getInstallDescription());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                installArray.put(obj);
+            }
+            return installArray.toString();
         });
+
 
         //Get request for getting date table details from the app
         get("/getfires", (request, response)-> {
 
-            //Create an array with dates
-            List<Fire> fireList = fireStringDao.queryForAll();
+            Connection conn = null;
+            Statement stmt = null;
+            ArrayList<Fire> fireList = new ArrayList<>();
+            //STEP 2: Register JDBC driver
+            Class.forName("com.mysql.jdbc.Driver");
+
+            //STEP 3: Open a connection
+            System.out.println("Connecting to a selected database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("Connected database successfully...");
+
+            //STEP 4: Execute a query
+            System.out.println("Getting records from table...");
+
+            PreparedStatement statement = conn.prepareStatement(procedure[9]);
+            ResultSet result = statement.executeQuery();
+            while(result.next()) {
+                Fire fire = new Fire();
+                fire.setFireID(result.getString("FireID"));
+                fire.setFireType(result.getString("FireType"));
+                fireList.add(fire);
+            }
             JSONArray fireArray = new JSONArray();
             for (Fire fire : fireList) {
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("FireID", fire.getFireID());
                     obj.put("FireType", fire.getFireType());
-                    obj.put("Make", fire.getMake());
-                    obj.put("Model", fire.getModel());
-                    obj.put("Fuel", fire.getFuel());
-                    obj.put("ECAN", fire.getECAN());
-                    obj.put("Nelson", fire.getNelson());
-                    obj.put("Life", fire.getLife());
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -817,43 +856,35 @@ public class Server {
         });
 
 
-        //create DAO
-        Dao<Schedule, String> scheduleStringDao = DaoManager.createDao(connectionSource, Schedule.class);
-
-        //Post request sends date table details to the app
-        /*post("/addschedule", (Request request, Response response) -> {
-            String data = request.body();
-            System.out.println(data);
-
-            JSONObject obj = new JSONObject(data);
-
-            String InstallDateString = obj.getString("InstallDate");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("YYYY-MM-DD");
-            java.util.Date DateValueUtil = sdf1.parse(InstallDateString);
-            java.sql.Date InstallDateSql = new java.sql.Date(DateValueUtil.getTime());
-
-            String InstallTime = obj.getString("InstallTime");
-            int UserID = obj.getInt("UserID");
-            int InstallID = obj.getInt("InstallID");
-
-            Schedule schedule = new Schedule();
-            schedule.setInstallDate(InstallDateSql);
-            schedule.setInstallTime(InstallTime);
-            schedule.setUserID(UserID);
-            schedule.setInstallID(InstallID);
-
-            scheduleStringDao.create(schedule);
-            return "OK";
-
-        });*/
-
         //Get request for getting date table details from the app
         get("/getschedules", (request, response)-> {
 
-            //Create an array with dates
-            List<Schedule> scheduleList = scheduleStringDao.queryForAll();
+            Connection conn = null;
+            Statement stmt = null;
+            ArrayList<Schedule> schedules = new ArrayList<>();
+            //STEP 2: Register JDBC driver
+            Class.forName("com.mysql.jdbc.Driver");
+
+            //STEP 3: Open a connection
+            System.out.println("Connecting to a selected database...");
+            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            System.out.println("Connected database successfully...");
+
+            //STEP 4: Execute a query
+            System.out.println("Getting records from table...");
+
+            PreparedStatement statement = conn.prepareStatement(procedure[7]);
+            ResultSet result = statement.executeQuery();
+            while(result.next()) {
+                Schedule schedule = new Schedule();
+                schedule.setInstallDate(result.getDate("InstallDate"));
+                schedule.setInstallTime(result.getString("InstallTime"));
+                schedule.setInstallID(result.getInt("InstallID"));
+                schedule.setUserID(result.getInt("UserID"));
+                schedules.add(schedule);
+            }
             JSONArray scheduleArray = new JSONArray();
-            for (Schedule schedule : scheduleList) {
+            for (Schedule schedule : schedules) {
                 JSONObject obj = new JSONObject();
                 try {
                     obj.put("InstallDate", schedule.getInstallDate());

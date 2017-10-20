@@ -17,24 +17,6 @@ public class Fire {
     @DatabaseField
     private String FireType;
 
-    @DatabaseField
-    private String Make;
-
-    @DatabaseField
-    private String Model;
-
-    @DatabaseField
-    private String Fuel;
-
-    @DatabaseField
-    private String ECAN;
-
-    @DatabaseField
-    private String Nelson;
-
-    @DatabaseField
-    private String Life;
-
     //Getters and setters
     public Fire() {
 
@@ -54,53 +36,5 @@ public class Fire {
 
     public void setFireType(String fireType) {
         FireType = fireType;
-    }
-
-    public String getMake() {
-        return Make;
-    }
-
-    public void setMake(String make) {
-        Make = make;
-    }
-
-    public String getModel() {
-        return Model;
-    }
-
-    public void setModel(String model) {
-        Model = model;
-    }
-
-    public String getFuel() {
-        return Fuel;
-    }
-
-    public void setFuel(String fuel) {
-        Fuel = fuel;
-    }
-
-    public String getECAN() {
-        return ECAN;
-    }
-
-    public void setECAN(String ECAN) {
-        this.ECAN = ECAN;
-    }
-
-    public String getNelson() {
-        return Nelson;
-    }
-
-    public void setNelson(String nelson) {
-        Nelson = nelson;
-    }
-
-    public String getLife() {
-        return Life;
-    }
-
-    public void setLife(String life) {
-        Life = life;
     }
 }

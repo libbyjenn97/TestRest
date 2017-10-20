@@ -16,14 +16,6 @@ public class Install_Type {
     @DatabaseField
     private String InstallDescription;
 
-    @DatabaseField
-    private int BasePrice;
-
-    @DatabaseField
-    private String EmailFromLetter;
-
-    @DatabaseField
-    private String SiteCheckFile;
 
     public Install_Type() {
 
@@ -43,29 +35,5 @@ public class Install_Type {
 
     public void setInstallDescription(String installDescription) {
         InstallDescription = installDescription;
-    }
-
-    public int getBasePrice() {
-        return BasePrice;
-    }
-
-    public void setBasePrice(int basePrice) {
-        BasePrice = basePrice;
-    }
-
-    public String getEmailFromLetter() {
-        return EmailFromLetter;
-    }
-
-    public void setEmailFromLetter(String emailFromLetter) {
-        EmailFromLetter = emailFromLetter;
-    }
-
-    public String getSiteCheckFile() {
-        return SiteCheckFile;
-    }
-
-    public void setSiteCheckFile(String siteCheckFile) {
-        SiteCheckFile = siteCheckFile;
     }
 }

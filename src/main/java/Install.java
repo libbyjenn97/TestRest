@@ -18,6 +18,12 @@ public class Install {
     private int SaleID;
 
     @DatabaseField
+    private String FireID;
+
+    @DatabaseField
+    private String StockList;
+
+    @DatabaseField
     private String InstallStatus;
 
     @DatabaseField
@@ -135,5 +141,21 @@ public class Install {
 
     public void setInstallerNote(String installerNote) {
         InstallerNote = installerNote;
+    }
+    public String getFireID() {
+        return FireID;
+    }
+
+    public String getStockList() {
+        return StockList;
+    }
+
+    public void setStockList(String stockList) {
+        StockList = stockList;
+    }
+
+    public void setFireID(String fireID) {
+        FireID = fireID;
+
     }
 }
