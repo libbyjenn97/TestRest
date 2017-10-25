@@ -23,23 +23,9 @@ public class Install {
     @DatabaseField
     private String StockList;
 
-    @DatabaseField
-    private String InstallStatus;
-
-    @DatabaseField
-    private boolean OrderChecked;
 
     @DatabaseField
     private String InstallerID;
-
-    @DatabaseField
-    private Date InstallDate;
-
-    @DatabaseField
-    private String InstallTime;
-
-    @DatabaseField
-    private int PartsReady;
 
     @DatabaseField
     private String NoteToInstaller;
@@ -71,52 +57,12 @@ public class Install {
         SaleID = saleID;
     }
 
-    public String getInstallStatus() {
-        return InstallStatus;
-    }
-
-    public void setInstallStatus(String installStatus) {
-        InstallStatus = installStatus;
-    }
-
-    public boolean isOrderChecked() {
-        return OrderChecked;
-    }
-
-    public void setOrderChecked(boolean orderChecked) {
-        OrderChecked = orderChecked;
-    }
-
     public String getInstallerID() {
         return InstallerID;
     }
 
     public void setInstallerID(String installerID) {
         InstallerID = installerID;
-    }
-
-    public Date getInstallDate() {
-        return InstallDate;
-    }
-
-    public void setInstallDate(Date installDate) {
-        InstallDate = installDate;
-    }
-
-    public String getInstallTime() {
-        return InstallTime;
-    }
-
-    public void setInstallTime(String installTime) {
-        InstallTime = installTime;
-    }
-
-    public int getPartsReady() {
-        return PartsReady;
-    }
-
-    public void setPartsReady(int partsReady) {
-        PartsReady = partsReady;
     }
 
     public String getNoteToInstaller() {

@@ -48,6 +48,7 @@ public class Server {
             "{call i_UpdateInstallComplete(?,?)}", //procedure[10]
             "{call i_UpdateInstallerNote(?,?)}", //procedure[11]
             "EXEC AWS_WCH_DB.dbo.a_LoginDetails", //procedure[12]
+            "EXEC AWS_WCH_DB.dbo.i_GetBookingDetails", //procedure[13]
     };
 
     public static void main(String[] args) throws SQLException {
@@ -169,7 +170,6 @@ public class Server {
                     customer.setPhone(result.getString("Phone"));
                     customer.setMobile(result.getString("Mobile"));
                     customer.setEmail(result.getString("Email"));
-                    customer.setReesCode(result.getString("ReesCode"));
                     customers.add(customer);
                 }
                 for (Customer customer : customers) {
@@ -184,7 +184,6 @@ public class Server {
                         obj.put("Phone", customer.getPhone());
                         obj.put("Mobile", customer.getMobile());
                         obj.put("Email", customer.getEmail());
-                        obj.put("ReesCode", customer.getReesCode());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -202,6 +201,101 @@ public class Server {
 
         });
 
+        //Get request for sending customer details to the app
+        get("/getbookingdetails", (request, response)-> {
+
+            Connection conn = null;
+            Statement stmt = null;
+            JSONArray bookingArray = new JSONArray();
+            ArrayList<Booking> bookings = new ArrayList<>();
+            try{
+                //STEP 2: Register JDBC driver
+                Class.forName("com.mysql.jdbc.Driver");
+
+                //STEP 3: Open a connection
+                System.out.println("Connecting to a selected database...");
+                conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                System.out.println("Connected database successfully...");
+
+                //STEP 4: Execute a query
+                System.out.println("Getting records from table...");
+
+                PreparedStatement statement = conn.prepareStatement(procedure[13]);
+                ResultSet result = statement.executeQuery();
+                while(result.next()) {
+                    Booking booking = new Booking();
+                    booking.setCustomerID(result.getInt("CustomerID"));
+                    booking.setFirstName(result.getString("FirstName"));
+                    booking.setLastName(result.getString("LastName"));
+                    booking.setPostalAddress(result.getString("PostalAddress"));
+                    booking.setPostalSuburb(result.getString("PostalSuburb"));
+                    booking.setPostalCode(result.getString("PostalCode"));
+                    booking.setPhone(result.getString("Phone"));
+                    booking.setMobile(result.getString("Mobile"));
+                    booking.setEmail(result.getString("Email"));
+                    booking.setSaleID(result.getInt("SaleID"));
+                    booking.setInstallTypeID(result.getInt("InstallTypeID"));
+                    booking.setSiteAddress(result.getString("SiteAddress"));
+                    booking.setSiteSuburb(result.getString("SiteSuburb"));
+                    booking.setInstallID(result.getInt("InstallID"));
+                    booking.setInstallerID(result.getString("InstallerID"));
+                    booking.setFireID(result.getString("FireID"));
+                    booking.setStockList(result.getString("StockList"));
+                    booking.setNoteToInstaller(result.getString("NoteToInstaller"));
+                    booking.setInstallComplete(result.getBoolean("InstallComplete"));
+                    booking.setInstallerNote(result.getString("InstallerNote"));
+                    booking.setFireType(result.getString("FireType"));
+                    booking.setInstallDescription(result.getString("InstallDescription"));
+                    booking.setInstallDate(result.getDate("InstallDate"));
+                    booking.setInstallTime(result.getString("InstallTime"));
+                    booking.setUserID(result.getInt("UserID"));
+                    bookings.add(booking);
+                }
+                for (Booking booking : bookings) {
+                    JSONObject obj = new JSONObject();
+                    try {
+                        obj.put("CustomerID", booking.getCustomerID());
+                        obj.put("FirstName", booking.getFirstName());
+                        obj.put("LastName", booking.getLastName());
+                        obj.put("PostalAddress", booking.getPostalAddress());
+                        obj.put("PostalSuburb", booking.getPostalSuburb());
+                        obj.put("PostalCode", booking.getPostalCode());
+                        obj.put("Phone", booking.getPhone());
+                        obj.put("Mobile", booking.getMobile());
+                        obj.put("Email", booking.getEmail());
+                        obj.put("SaleID", booking.getSaleID());
+                        obj.put("InstallTypeID", booking.getInstallTypeID());
+                        obj.put("SiteAddress", booking.getSiteAddress());
+                        obj.put("SiteSuburb", booking.getSiteSuburb());
+                        obj.put("InstallID", booking.getInstallID());
+                        obj.put("InstallerID", booking.getInstallerID());
+                        obj.put("FireID", booking.getFireID());
+                        obj.put("StockList", booking.getStockList());
+                        obj.put("NoteToInstaller", booking.getNoteToInstaller());
+                        obj.put("InstallComplete", booking.isInstallComplete());
+                        obj.put("InstallerNote", booking.getInstallerNote());
+                        obj.put("FireType", booking.getFireType());
+                        obj.put("InstallDescription", booking.getInstallDescription());
+                        obj.put("InstallDate", booking.getInstallDate());
+                        obj.put("InstallTime", booking.getInstallTime());
+                        obj.put("UserID", booking.getUserID());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    bookingArray.put(obj);
+                }
+
+                //STEP 4: Execute a query
+                System.out.println("Bookings found successfully");
+
+            }catch(SQLException se){
+                //Handle errors for JDBC
+                se.printStackTrace();
+            }
+            return bookingArray.toString();
+
+        });
+
         post("/postInstallID", (Request request, Response response) -> {
             String data = request.body();
             System.out.println(data);
@@ -215,8 +309,10 @@ public class Server {
             return InstallID;
         });
 
+
+
         //Get request for sending customer details to the app
-        get("/getbookingdetails", (request, response)-> {
+        /*get("/getbookingdetails", (request, response)-> {
 
             Connection conn = null;
             Statement stmt = null;
@@ -326,7 +422,7 @@ public class Server {
             }
             return bookingDetailsArray.toString();
 
-        });
+        });*/
 
         //create DAO
         Dao<Customer, String> newCustomerDao = DaoManager.createDao(connectionSource, Customer.class);
@@ -349,7 +445,6 @@ public class Server {
                     obj.put("Phone", customer.getPhone());
                     obj.put("Mobile", customer.getMobile());
                     obj.put("Email", customer.getEmail());
-                    obj.put("ReesCode", customer.getReesCode());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

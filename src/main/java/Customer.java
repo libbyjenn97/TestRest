@@ -37,9 +37,6 @@ public class Customer {
     @DatabaseField
     private String Email;
 
-    @DatabaseField
-    private String ReesCode;
-
     //Getters and setters
     public Customer() {
 
@@ -115,14 +112,6 @@ public class Customer {
 
     public void setEmail(String Email) {
         this.Email = Email;
-    }
-
-    public String getReesCode() {
-        return ReesCode;
-    }
-
-    public void setReesCode(String ReesCode) {
-        this.ReesCode = ReesCode;
     }
 }
 
