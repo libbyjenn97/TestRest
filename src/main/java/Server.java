@@ -57,6 +57,13 @@ public class Server {
 
         //Set port number
         port(1997);
+
+        String keyStoreLocation = "/home/ubuntu/test.jks";
+        String keyStorePassword = "wchkeystorep";
+        secure(keyStoreLocation, keyStorePassword, null, null);
+
+        //secure(keystoreFilePath, keystorePassword, truststoreFilePath, truststorePassword);
+
         //Set database url
         String databaseUrl = "jdbc:sqlserver://wchdb.cnfoxyxq90wv.ap-southeast-2.rds.amazonaws.com:1433;databaseName=AWS_WCH_DB";
         //Connect to database, set username and password
