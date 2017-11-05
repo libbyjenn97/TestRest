@@ -2,10 +2,11 @@ import com.j256.ormlite.field.DatabaseField;
 
 import java.sql.Date;
 
-/**
- * Created by libbyjennings on 25/10/17.
+/*
+ * Created by Libby Jennings on 25/10/17.
+ * Description: Class for getting booking details
  */
-public class Booking {
+class Booking {
 
     @DatabaseField
     private Date InstallDate;
@@ -83,203 +84,203 @@ public class Booking {
     @DatabaseField
     private String InstallDescription;
 
-    public Date getInstallDate() {
+    Date getInstallDate() {
         return InstallDate;
     }
 
-    public void setInstallDate(Date installDate) {
+    void setInstallDate(Date installDate) {
         InstallDate = installDate;
     }
 
-    public String getInstallTime() {
+    String getInstallTime() {
         return InstallTime;
     }
 
-    public void setInstallTime(String installTime) {
+    void setInstallTime(String installTime) {
         InstallTime = installTime;
     }
 
-    public int getUserID() {
+    int getUserID() {
         return UserID;
     }
 
-    public void setUserID(int userID) {
+    void setUserID(int userID) {
         UserID = userID;
     }
 
-    public int getInstallID() {
+    int getInstallID() {
         return InstallID;
     }
 
-    public void setInstallID(int installID) {
+    void setInstallID(int installID) {
         InstallID = installID;
     }
 
-    public int getSaleID() {
+    int getSaleID() {
         return SaleID;
     }
 
-    public void setSaleID(int saleID) {
+    void setSaleID(int saleID) {
         SaleID = saleID;
     }
 
-    public String getFireID() {
+    String getFireID() {
         return FireID;
     }
 
-    public void setFireID(String fireID) {
+    void setFireID(String fireID) {
         FireID = fireID;
     }
 
-    public String getStockList() {
+    String getStockList() {
         return StockList;
     }
 
-    public void setStockList(String stockList) {
+    void setStockList(String stockList) {
         StockList = stockList;
     }
 
-    public String getInstallerID() {
+    String getInstallerID() {
         return InstallerID;
     }
 
-    public void setInstallerID(String installerID) {
+    void setInstallerID(String installerID) {
         InstallerID = installerID;
     }
 
-    public String getNoteToInstaller() {
+    String getNoteToInstaller() {
         return NoteToInstaller;
     }
 
-    public void setNoteToInstaller(String noteToInstaller) {
+    void setNoteToInstaller(String noteToInstaller) {
         NoteToInstaller = noteToInstaller;
     }
 
-    public boolean isInstallComplete() {
+    boolean isInstallComplete() {
         return InstallComplete;
     }
 
-    public void setInstallComplete(boolean installComplete) {
+    void setInstallComplete(boolean installComplete) {
         InstallComplete = installComplete;
     }
 
-    public String getInstallerNote() {
+    String getInstallerNote() {
         return InstallerNote;
     }
 
-    public void setInstallerNote(String installerNote) {
+    void setInstallerNote(String installerNote) {
         InstallerNote = installerNote;
     }
 
-    public int getCustomerID() {
+    int getCustomerID() {
         return CustomerID;
     }
 
-    public void setCustomerID(int customerID) {
+    void setCustomerID(int customerID) {
         CustomerID = customerID;
     }
 
-    public int getInstallTypeID() {
+    int getInstallTypeID() {
         return InstallTypeID;
     }
 
-    public void setInstallTypeID(int installTypeID) {
+    void setInstallTypeID(int installTypeID) {
         InstallTypeID = installTypeID;
     }
 
-    public String getSiteAddress() {
+    String getSiteAddress() {
         return SiteAddress;
     }
 
-    public void setSiteAddress(String siteAddress) {
+    void setSiteAddress(String siteAddress) {
         SiteAddress = siteAddress;
     }
 
-    public String getSiteSuburb() {
+    String getSiteSuburb() {
         return SiteSuburb;
     }
 
-    public void setSiteSuburb(String siteSuburb) {
+    void setSiteSuburb(String siteSuburb) {
         SiteSuburb = siteSuburb;
     }
 
-    public String getFirstName() {
+    String getFirstName() {
         return FirstName;
     }
 
-    public void setFirstName(String firstName) {
+    void setFirstName(String firstName) {
         FirstName = firstName;
     }
 
-    public String getLastName() {
+    String getLastName() {
         return LastName;
     }
 
-    public void setLastName(String lastName) {
+    void setLastName(String lastName) {
         LastName = lastName;
     }
 
-    public String getPostalAddress() {
+    String getPostalAddress() {
         return PostalAddress;
     }
 
-    public void setPostalAddress(String postalAddress) {
+    void setPostalAddress(String postalAddress) {
         PostalAddress = postalAddress;
     }
 
-    public String getPostalSuburb() {
+    String getPostalSuburb() {
         return PostalSuburb;
     }
 
-    public void setPostalSuburb(String postalSuburb) {
+    void setPostalSuburb(String postalSuburb) {
         PostalSuburb = postalSuburb;
     }
 
-    public String getPostalCode() {
+    String getPostalCode() {
         return PostalCode;
     }
 
-    public void setPostalCode(String postalCode) {
+    void setPostalCode(String postalCode) {
         PostalCode = postalCode;
     }
 
-    public String getPhone() {
+    String getPhone() {
         return Phone;
     }
 
-    public void setPhone(String phone) {
+    void setPhone(String phone) {
         Phone = phone;
     }
 
-    public String getMobile() {
+    String getMobile() {
         return Mobile;
     }
 
-    public void setMobile(String mobile) {
+    void setMobile(String mobile) {
         Mobile = mobile;
     }
 
-    public String getEmail() {
+    String getEmail() {
         return Email;
     }
 
-    public void setEmail(String email) {
+    void setEmail(String email) {
         Email = email;
     }
 
-    public String getFireType() {
+    String getFireType() {
         return FireType;
     }
 
-    public void setFireType(String fireType) {
+    void setFireType(String fireType) {
         FireType = fireType;
     }
 
-    public String getInstallDescription() {
+    String getInstallDescription() {
         return InstallDescription;
     }
 
-    public void setInstallDescription(String installDescription) {
+    void setInstallDescription(String installDescription) {
         InstallDescription = installDescription;
     }
 }

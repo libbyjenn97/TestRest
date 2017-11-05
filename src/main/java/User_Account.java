@@ -1,5 +1,6 @@
-/**
- * Created by libbyjennings on 23/09/17.
+/*
+ * Created by Libby Jennings on 23/09/17.
+ * Description: Class for getting user account details
  */
 
 import com.j256.ormlite.field.DatabaseField;
@@ -7,8 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 //Create database table name
 @DatabaseTable(tableName = "USER_ACCOUNT")
-
-public class User_Account {
+class User_Account {
 
     @DatabaseField
     private int UserID;
@@ -31,64 +31,59 @@ public class User_Account {
     @DatabaseField
     private String PasswordHash;
 
-    //Getters and setters
-    public User_Account() {
-
-    }
-
-    public int getUserID() {
+    int getUserID() {
         return UserID;
     }
 
-    public void setUserID(int userID) {
+    void setUserID(int userID) {
         UserID = userID;
     }
 
-    public int getAuthenticationID() {
+    int getAuthenticationID() {
         return AuthenticationID;
     }
 
-    public void setAuthenticationID(int authenticationID) {
+    void setAuthenticationID(int authenticationID) {
         AuthenticationID = authenticationID;
     }
 
-    public String getUserName() {
+    String getUserName() {
         return UserName;
     }
 
-    public void setUserName(String userName) {
+    void setUserName(String userName) {
         UserName = userName;
     }
 
-    public boolean isAccountActive() {
+    boolean isAccountActive() {
         return AccountActive;
     }
 
-    public void setAccountActive(boolean accountActive) {
+    void setAccountActive(boolean accountActive) {
         AccountActive = accountActive;
     }
 
-    public String getRoleType() {
+    String getRoleType() {
         return RoleType;
     }
 
-    public void setRoleType(String roleType) {
+    void setRoleType(String roleType) {
         RoleType = roleType;
     }
 
-    public boolean isInstall() {
+    boolean isInstall() {
         return Install;
     }
 
-    public void setInstall(boolean install) {
+    void setInstall(boolean install) {
         Install = install;
     }
 
-    public String getPasswordHash() {
+    String getPasswordHash() {
         return PasswordHash;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    void setPasswordHash(String passwordHash) {
         PasswordHash = passwordHash;
     }
 }

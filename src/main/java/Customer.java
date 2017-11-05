@@ -1,5 +1,6 @@
-/**
- * Created by libbyjennings on 22/09/17.
+/*
+ * Created by Libby Jennings on 22/09/17.
+ * Description: Class for getting customer details
  */
 
 import com.j256.ormlite.field.DatabaseField;
@@ -7,8 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 //Create database table name
 @DatabaseTable(tableName = "CUSTOMER")
-
-public class Customer {
+class Customer {
 
     @DatabaseField
     private int CustomerID;
@@ -37,80 +37,75 @@ public class Customer {
     @DatabaseField
     private String Email;
 
-    //Getters and setters
-    public Customer() {
-
-    }
-
-    public int getCustomerID() {
+    int getCustomerID() {
         return CustomerID;
     }
 
-    public void setCustomerID(int CustomerID) {
+    void setCustomerID(int CustomerID) {
         this.CustomerID = CustomerID;
     }
 
-    public String getFirstName() {
+    String getFirstName() {
         return FirstName;
     }
 
-    public void setFirstName(String FirstName) {
+    void setFirstName(String FirstName) {
         this.FirstName = FirstName;
     }
 
-    public String getLastName() {
+    String getLastName() {
         return LastName;
     }
 
-    public void setLastName(String LastName) {
+    void setLastName(String LastName) {
         this.LastName = LastName;
     }
 
-    public String getPostalAddress() {
+    String getPostalAddress() {
         return PostalAddress;
     }
 
-    public void setPostalAddress(String PostalAddress) {
+    void setPostalAddress(String PostalAddress) {
         this.PostalAddress = PostalAddress;
     }
 
-    public String getPostalSuburb() {
+    String getPostalSuburb() {
         return PostalSuburb;
     }
 
-    public void setPostalSuburb(String PostalSuburb) {
+    void setPostalSuburb(String PostalSuburb) {
         this.PostalSuburb = PostalSuburb;
     }
 
-    public String getPostalCode() {
+    String getPostalCode() {
         return PostalCode;
     }
 
-    public void setPostalCode(String PostalCode) {
+    void setPostalCode(String PostalCode) {
         this.PostalCode = PostalCode;
     }
 
-    public String getPhone() {
+    String getPhone() {
         return Phone;
     }
 
-    public void setPhone(String Phone) {
+    void setPhone(String Phone) {
         this.Phone = Phone;
     }
 
-    public String getMobile() {
+    String getMobile() {
         return Mobile;
     }
 
-    public void setMobile(String Mobile) {
+    void setMobile(String Mobile) {
         this.Mobile = Mobile;
     }
 
-    public String getEmail() {
+    String getEmail() {
         return Email;
     }
 
-    public void setEmail(String Email) {
+    void setEmail(String Email) {
         this.Email = Email;
     }
 }
