@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataSource name="AWS_WCH_DB@wchdb.cnfoxyxq90wv.ap-southeast-2.rds.amazonaws.com">
+<dataSource name="AWS_WCH_DB@wchonaws.cnfoxyxq90wv.ap-southeast-2.rds.amazonaws.com">
   <database-model serializer="dbm" rdbms="MSSQL" format-version="4.2">
     <root id="1"/>
     <database id="2" parent="1" name="master">
@@ -22,10 +22,11 @@
     <database id="7" parent="1" name="AWS_WCH_DB">
       <ObjectId>6</ObjectId>
       <Current>1</Current>
+      <Visible>1</Visible>
     </database>
     <schema id="8" parent="2" name="guest">
       <ObjectId>2</ObjectId>
-      <IntrospectionTimestamp>2017-09-22.12:50:13.257</IntrospectionTimestamp>
+      <IntrospectionTimestamp>2017-11-08.12:05:04.737</IntrospectionTimestamp>
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
@@ -66,8 +67,45 @@
     <schema id="20" parent="2" name="db_denydatawriter">
       <ObjectId>16393</ObjectId>
     </schema>
-    <schema id="21" parent="2" name="test">
-      <ObjectId>5</ObjectId>
+    <schema id="21" parent="7" name="dbo">
+      <ObjectId>1</ObjectId>
+      <Current>1</Current>
+    </schema>
+    <schema id="22" parent="7" name="guest">
+      <ObjectId>2</ObjectId>
+    </schema>
+    <schema id="23" parent="7" name="INFORMATION_SCHEMA">
+      <ObjectId>3</ObjectId>
+    </schema>
+    <schema id="24" parent="7" name="sys">
+      <ObjectId>4</ObjectId>
+    </schema>
+    <schema id="25" parent="7" name="db_owner">
+      <ObjectId>16384</ObjectId>
+    </schema>
+    <schema id="26" parent="7" name="db_accessadmin">
+      <ObjectId>16385</ObjectId>
+    </schema>
+    <schema id="27" parent="7" name="db_securityadmin">
+      <ObjectId>16386</ObjectId>
+    </schema>
+    <schema id="28" parent="7" name="db_ddladmin">
+      <ObjectId>16387</ObjectId>
+    </schema>
+    <schema id="29" parent="7" name="db_backupoperator">
+      <ObjectId>16389</ObjectId>
+    </schema>
+    <schema id="30" parent="7" name="db_datareader">
+      <ObjectId>16390</ObjectId>
+    </schema>
+    <schema id="31" parent="7" name="db_datawriter">
+      <ObjectId>16391</ObjectId>
+    </schema>
+    <schema id="32" parent="7" name="db_denydatareader">
+      <ObjectId>16392</ObjectId>
+    </schema>
+    <schema id="33" parent="7" name="db_denydatawriter">
+      <ObjectId>16393</ObjectId>
     </schema>
   </database-model>
 </dataSource>

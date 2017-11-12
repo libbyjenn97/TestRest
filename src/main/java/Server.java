@@ -40,6 +40,7 @@ public class Server {
             "{call i_UpdateInstallerNote(?,?)}", //procedure[2]
             "EXEC AWS_WCH_DB.dbo.a_LoginDetails", //procedure[3]
             "EXEC AWS_WCH_DB.dbo.i_GetBookingDetails", //procedure[4]
+            "{call s_CreateCustomerSale(?,?,?,?,?,?,?,?,?,?)}" //procedure[5]
     };
 
     public static void main(String[] args) throws SQLException {
@@ -87,7 +88,7 @@ public class Server {
                 //STEP 4: Execute a query
                 System.out.println("Inserting records into the table...");
 
-                CallableStatement statement = conn.prepareCall(procedure[2]);
+                CallableStatement statement = conn.prepareCall(procedure[5]);
 
                 statement.setString(1, FirstName);
                 statement.setString(2, LastName);
@@ -195,7 +196,7 @@ public class Server {
                 //sql server procedure
                 PreparedStatement statement = conn.prepareStatement(procedure[4]);
                 ResultSet result = statement.executeQuery();
-                
+
                 while(result.next()) {
                     Booking booking = new Booking();
                     booking.setCustomerID(result.getInt("CustomerID"));

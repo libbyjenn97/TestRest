@@ -14,11 +14,11 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="AWS_WCH_DB@wchdb.cnfoxyxq90wv.ap-southeast-2.rds.amazonaws.com" uuid="08b3635e-8e1a-4d75-b646-bd9bd8b195cb">
+    <data-source source="LOCAL" name="AWS_WCH_DB@wchonaws.cnfoxyxq90wv.ap-southeast-2.rds.amazonaws.com" uuid="08b3635e-8e1a-4d75-b646-bd9bd8b195cb">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://wchdb.cnfoxyxq90wv.ap-southeast-2.rds.amazonaws.com:1433;databaseName=AWS_WCH_DB</jdbc-url>
+      <jdbc-url>jdbc:sqlserver://wchonaws.cnfoxyxq90wv.ap-southeast-2.rds.amazonaws.com:47947;databaseName=AWS_WCH_DB</jdbc-url>
     </data-source>
   </component>
 </project>

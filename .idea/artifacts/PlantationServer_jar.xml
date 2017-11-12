@@ -1,7 +1,10 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="PlantationServer:jar">
+  <artifact type="jar" build-on-make="true" name="PlantationServer:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/PlantationServer_jar</output-path>
     <root id="archive" name="PlantationServer.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
       <element id="module-output" name="PlantationServer" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-server/9.3.2.v20150730/jetty-server-9.3.2.v20150730.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar" path-in-jar="/" />
@@ -32,6 +35,35 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/eclipse/jetty/websocket/websocket-api/9.3.2.v20150730/websocket-api-9.3.2.v20150730.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.7.12/slf4j-simple-1.7.12.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar" path-in-jar="/" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.4" />
+      <element id="library" level="project" name="Maven: com.j256.ormlite:ormlite-core:4.48" />
+      <element id="library" level="project" name="Maven: com.j256.ormlite:ormlite-jdbc:4.48" />
+      <element id="library" level="project" name="Maven: com.microsoft.sqlserver:mssql-jdbc:6.2.1.jre8" />
+      <element id="library" level="project" name="Maven: com.sparkjava:spark-core:2.3" />
+      <element id="library" level="project" name="Maven: commons-beanutils:commons-beanutils:1.8.0" />
+      <element id="library" level="project" name="Maven: commons-collections:commons-collections:3.2.1" />
+      <element id="library" level="project" name="Maven: commons-lang:commons-lang:2.5" />
+      <element id="library" level="project" name="Maven: commons-logging:commons-logging:1.1.1" />
+      <element id="library" level="project" name="Maven: javax.servlet:javax.servlet-api:3.1.0" />
+      <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.6" />
+      <element id="library" level="project" name="Maven: net.sf.ezmorph:ezmorph:1.0.6" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty.websocket:websocket-api:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty.websocket:websocket-client:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty.websocket:websocket-common:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty.websocket:websocket-server:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty.websocket:websocket-servlet:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-http:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-io:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-security:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-server:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-servlet:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-util:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-webapp:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.eclipse.jetty:jetty-xml:9.3.2.v20150730" />
+      <element id="library" level="project" name="Maven: org.json:json:20090211" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.12" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-simple:1.7.12" />
+      <element id="library" level="project" name="Maven: net.sf.json-lib:json-lib:jdk15:2.4" />
     </root>
   </artifact>
 </component>
